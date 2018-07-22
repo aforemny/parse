@@ -406,10 +406,8 @@ and =
 
 
 {-| TODO
-
-@todo(aforemny) notEqualTo : String -> Value -> Constraint
 -}
-notEqualTo : String -> String -> Constraint
+notEqualTo : String -> Value -> Constraint
 notEqualTo =
     Private.Query.notEqualTo
 
@@ -458,10 +456,8 @@ exists =
 
 
 {-| TODO
-
-@todo(aforemny) equalTo : String -> Value -> Constraint
 -}
-equalTo : String -> String -> Constraint
+equalTo : String -> Value -> Constraint
 equalTo =
     Private.Query.equalTo
 

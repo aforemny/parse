@@ -1,6 +1,5 @@
 module Private.Query exposing (..)
 
-
 import Dict exposing (Dict)
 import Http
 import Private.Error exposing (Error)
@@ -102,8 +101,8 @@ type Constraint
 
 type FieldConstraint
     = Exists
-    | EqualTo String
-    | NotEqualTo String
+    | EqualTo Value
+    | NotEqualTo Value
     | LessThan Float
     | LessThanOrEqualTo Float
     | GreaterThan Float
@@ -121,6 +120,8 @@ type FieldConstraint
    $all         Contains all of the given values
    $text        Performs a full text search on indexed fields
 -}
+
+
 and : List Constraint -> Constraint
 and constraints =
     let
@@ -184,12 +185,12 @@ exists fieldName =
     Field fieldName [ Exists ]
 
 
-equalTo : String -> String -> Constraint
+equalTo : String -> Value -> Constraint
 equalTo fieldName =
     Field fieldName << List.singleton << EqualTo
 
 
-notEqualTo : String -> String -> Constraint
+notEqualTo : String -> Value -> Constraint
 notEqualTo fieldName =
     Field fieldName << List.singleton << NotEqualTo
 
@@ -298,7 +299,7 @@ encodeConstraintHelp constraint =
                 [ ( fieldName
                   , case fieldEqualTo of
                         Just value ->
-                            Encode.string value
+                            value
 
                         Nothing ->
                             fieldConstraints
@@ -313,45 +314,31 @@ encodeFieldConstraint fieldConstraint =
     case fieldConstraint of
         Exists ->
             Just
-                ( "$exists"
-                , Encode.bool True
-                )
+                ( "$exists", Encode.bool True )
 
-        NotEqualTo string ->
+        NotEqualTo value ->
             Just
-                ( "$ne"
-                , Encode.string string
-                )
+                ( "$ne", value )
 
         Regex regex ->
             Just
-                ( "$regex"
-                , Encode.string regex
-                )
+                ( "$regex", Encode.string regex )
 
         LessThan float ->
             Just
-                ( "$lt"
-                , Encode.float float
-                )
+                ( "$lt", Encode.float float )
 
         LessThanOrEqualTo float ->
             Just
-                ( "$lte"
-                , Encode.float float
-                )
+                ( "$lte", Encode.float float )
 
         GreaterThan float ->
             Just
-                ( "$gt"
-                , Encode.float float
-                )
+                ( "$gt", Encode.float float )
 
         GreaterThanOrEqualTo float ->
             Just
-                ( "$gte"
-                , Encode.float float
-                )
+                ( "$gte", Encode.float float )
 
         EqualTo _ ->
             Nothing
