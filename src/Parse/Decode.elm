@@ -18,9 +18,9 @@ module Parse.Decode
 -}
 
 import Date exposing (Date)
-import Internal.ObjectId exposing (..)
-import Internal.Pointer exposing (..)
-import Internal.SessionToken exposing (..)
+import Private.ObjectId exposing (..)
+import Private.Pointer exposing (..)
+import Private.SessionToken exposing (..)
 import Json.Decode as Decode exposing (Decoder)
 
 

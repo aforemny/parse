@@ -1,4 +1,4 @@
-module Internal.ObjectId exposing (ObjectId(..), fromString, toString)
+module Private.ObjectId exposing (ObjectId(..), fromString, toString)
 
 
 type ObjectId a

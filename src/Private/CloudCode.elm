@@ -1,6 +1,6 @@
-module Internal.CloudCode exposing (function, job)
+module Private.CloudCode exposing (function, job)
 
-import Internal.Request exposing (Request, request)
+import Private.Request exposing (Request, request)
 import Json.Decode as Decode exposing (Decoder, Value)
 
 

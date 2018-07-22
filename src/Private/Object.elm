@@ -1,8 +1,8 @@
-module Internal.Object exposing (Object, create, get, update, delete)
+module Private.Object exposing (Object, create, get, update, delete)
 
 import Date exposing (Date)
-import Internal.ObjectId as ObjectId exposing (ObjectId)
-import Internal.Request as Request exposing (Request, request)
+import Private.ObjectId as ObjectId exposing (ObjectId)
+import Private.Request as Request exposing (Request, request)
 import Json.Decode as Decode exposing (Decoder, Value)
 
 

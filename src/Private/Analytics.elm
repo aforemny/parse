@@ -1,7 +1,7 @@
-module Internal.Analytics exposing (Event, post, postAt)
+module Private.Analytics exposing (Event, post, postAt)
 
 import Date exposing (Date)
-import Internal.Request exposing (Request, request)
+import Private.Request exposing (Request, request)
 import Json.Decode as Decode exposing (Decoder, Value)
 import Json.Encode as Encode
 import Parse.Decode as Decode

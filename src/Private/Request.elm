@@ -1,4 +1,4 @@
-module Internal.Request
+module Private.Request
     exposing
         ( Config
         , simpleConfig
@@ -13,9 +13,9 @@ module Internal.Request
 
 import Date exposing (Date)
 import Http
-import Internal.Error as Error exposing (Error)
-import Internal.ObjectId as ObjectId exposing (ObjectId)
-import Internal.SessionToken as SessionToken exposing (SessionToken)
+import Private.Error as Error exposing (Error)
+import Private.ObjectId as ObjectId exposing (ObjectId)
+import Private.SessionToken as SessionToken exposing (SessionToken)
 import Json.Decode as Decode exposing (Decoder, Value)
 import Json.Encode as Encode
 import Parse.Decode as Decode

@@ -1,4 +1,4 @@
-module Internal.ACL
+module Private.ACL
     exposing
         ( ACL
         , RoleName
@@ -13,9 +13,9 @@ module Internal.ACL
         , decode
         )
 
-import Internal.ObjectId as ObjectId exposing (ObjectId)
-import Internal.ObjectId exposing (ObjectId)
-import Internal.Pointer as Pointer exposing (Pointer, pointer)
+import Private.ObjectId as ObjectId exposing (ObjectId)
+import Private.ObjectId exposing (ObjectId)
+import Private.Pointer as Pointer exposing (Pointer, pointer)
 import Json.Decode as Decode exposing (Decoder, Value)
 import Json.Encode as Encode
 

@@ -1,11 +1,11 @@
-module Internal.Query exposing (..)
+module Private.Query exposing (..)
 
 
 import Dict exposing (Dict)
 import Http
-import Internal.Error exposing (Error)
-import Internal.Object exposing (Object)
-import Internal.Request as Requet exposing (Request, request)
+import Private.Error exposing (Error)
+import Private.Object exposing (Object)
+import Private.Request as Requet exposing (Request, request)
 import Json.Decode as Decode exposing (Decoder, Value)
 import Json.Encode as Encode
 import Task exposing (Task)

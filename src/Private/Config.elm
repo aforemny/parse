@@ -1,6 +1,6 @@
-module Internal.Config exposing (getConfig, updateConfig)
+module Private.Config exposing (getConfig, updateConfig)
 
-import Internal.Request exposing (Request, request)
+import Private.Request exposing (Request, request)
 import Json.Decode as Decode exposing (Decoder, Value)
 import Json.Encode as Encode
 

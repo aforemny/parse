@@ -1,7 +1,7 @@
-module Internal.File exposing (..)
+module Private.File exposing (..)
 
 import Http
-import Internal.Request as Request exposing (Request, request, requestWithAdditionalHeaders)
+import Private.Request as Request exposing (Request, request, requestWithAdditionalHeaders)
 import Json.Decode as Decode exposing (Decoder, Value)
 import Json.Decode.Pipeline as Decode
 import Json.Encode as Encode

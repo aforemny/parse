@@ -1,4 +1,4 @@
-module Internal.Helpers exposing (on)
+module Private.Helpers exposing (on)
 
 
 on : (a -> b) -> (b -> b -> c) -> a -> a -> c

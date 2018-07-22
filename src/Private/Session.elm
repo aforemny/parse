@@ -1,11 +1,11 @@
-module Internal.Session exposing (..)
+module Private.Session exposing (..)
 
 import Date exposing (Date)
-import Internal.Object as Object exposing (Object)
-import Internal.ObjectId as ObjectId exposing (ObjectId)
-import Internal.Pointer as Pointer exposing (Pointer)
-import Internal.Request as Request exposing (Request, request)
-import Internal.SessionToken as SessionToken exposing (SessionToken)
+import Private.Object as Object exposing (Object)
+import Private.ObjectId as ObjectId exposing (ObjectId)
+import Private.Pointer as Pointer exposing (Pointer)
+import Private.Request as Request exposing (Request, request)
+import Private.SessionToken as SessionToken exposing (SessionToken)
 import Json.Decode as Decode exposing (Decoder, Value)
 import Json.Decode.Pipeline as Decode
 import Json.Encode as Encode

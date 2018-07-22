@@ -19,9 +19,9 @@ module Parse.Encode
 -}
 
 import Date exposing (Date)
-import Internal.ObjectId exposing (..)
-import Internal.Pointer exposing (Pointer(..))
-import Internal.SessionToken exposing (..)
+import Private.ObjectId exposing (..)
+import Private.Pointer exposing (Pointer(..))
+import Private.SessionToken exposing (..)
 import Json.Encode as Encode exposing (Value)
 import Time.DateTime
 

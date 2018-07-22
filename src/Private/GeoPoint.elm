@@ -1,4 +1,4 @@
-module Internal.GeoPoint
+module Private.GeoPoint
     exposing
         ( GeoPoint
         , geoPoint

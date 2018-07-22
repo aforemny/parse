@@ -1,4 +1,4 @@
-module Internal.Role
+module Private.Role
     exposing
         ( addRoles
         , addUsers
@@ -12,12 +12,12 @@ module Internal.Role
         )
 
 import Date exposing (Date)
-import Internal.ACL as ACL exposing (ACL)
-import Internal.Object exposing (Object)
-import Internal.ObjectId as ObjectId exposing (ObjectId)
-import Internal.Pointer as Pointer exposing (Pointer)
-import Internal.Request as Request exposing (request)
-import Internal.Request exposing (Request)
+import Private.ACL as ACL exposing (ACL)
+import Private.Object exposing (Object)
+import Private.ObjectId as ObjectId exposing (ObjectId)
+import Private.Pointer as Pointer exposing (Pointer)
+import Private.Request as Request exposing (request)
+import Private.Request exposing (Request)
 import Json.Decode as Decode exposing (Decoder, Value)
 import Json.Decode.Pipeline as Decode
 import Json.Encode as Encode

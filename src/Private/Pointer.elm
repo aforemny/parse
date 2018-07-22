@@ -1,6 +1,6 @@
-module Internal.Pointer exposing (Pointer(..), pointer, objectId, className)
+module Private.Pointer exposing (Pointer(..), pointer, objectId, className)
 
-import Internal.ObjectId exposing (..)
+import Private.ObjectId exposing (..)
 
 
 type Pointer a

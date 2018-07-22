@@ -1,4 +1,4 @@
-module Internal.SessionToken
+module Private.SessionToken
     exposing
         ( SessionToken(..)
         , toString

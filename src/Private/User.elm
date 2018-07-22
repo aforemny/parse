@@ -1,11 +1,11 @@
-module Internal.User exposing (..)
+module Private.User exposing (..)
 
 import Date exposing (Date)
 import Http
-import Internal.Object as Object exposing (Object)
-import Internal.ObjectId as ObjectId exposing (ObjectId)
-import Internal.Request as Request exposing (Request, request, requestWithAdditionalHeaders)
-import Internal.SessionToken as SessionToken exposing (SessionToken)
+import Private.Object as Object exposing (Object)
+import Private.ObjectId as ObjectId exposing (ObjectId)
+import Private.Request as Request exposing (Request, request, requestWithAdditionalHeaders)
+import Private.SessionToken as SessionToken exposing (SessionToken)
 import Json.Decode as Decode exposing (Decoder, Value)
 import Json.Decode.Pipeline as Decode
 import Json.Encode as Encode

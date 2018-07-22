@@ -236,23 +236,23 @@ module Parse
 import Date exposing (Date)
 import Dict
 import Http exposing (Request)
-import Internal.ACL
-import Internal.Analytics
-import Internal.CloudCode
-import Internal.Config
-import Internal.Error
-import Internal.File
-import Internal.GeoPoint
-import Internal.Object
-import Internal.ObjectId
-import Internal.Pointer
-import Internal.Query
-import Internal.Request
-import Internal.Role
-import Internal.Role
-import Internal.Session
-import Internal.SessionToken
-import Internal.User
+import Private.ACL
+import Private.Analytics
+import Private.CloudCode
+import Private.Config
+import Private.Error
+import Private.File
+import Private.GeoPoint
+import Private.Object
+import Private.ObjectId
+import Private.Pointer
+import Private.Query
+import Private.Request
+import Private.Role
+import Private.Role
+import Private.Session
+import Private.SessionToken
+import Private.User
 import Json.Decode as Decode exposing (Decoder, Value)
 import Json.Encode as Encode
 import Parse.Decode as Decode
@@ -265,20 +265,20 @@ import Task exposing (Task)
 {-| TODO
 -}
 type alias Config =
-    Internal.Request.Config
+    Private.Request.Config
 
 
 {-| TODO
 -}
 simpleConfig : String -> String -> Config
 simpleConfig =
-    Internal.Request.simpleConfig
+    Private.Request.simpleConfig
 
 
 {-| TODO
 -}
 type alias SessionToken =
-    Internal.SessionToken.SessionToken
+    Private.SessionToken.SessionToken
 
 
 
@@ -288,13 +288,13 @@ type alias SessionToken =
 {-| TODO
 -}
 type alias ObjectId a =
-    Internal.ObjectId.ObjectId a
+    Private.ObjectId.ObjectId a
 
 
 {-| TODO
 -}
 type alias Object a =
-    Internal.Object.Object a
+    Private.Object.Object a
 
 
 {-| TODO
@@ -305,14 +305,14 @@ create :
     -> a
     -> Request { objectId : ObjectId a, createdAt : Date }
 create =
-    Internal.Object.create
+    Private.Object.create
 
 
 {-| TODO
 -}
 get : String -> Decoder (Object a) -> ObjectId a -> Request (Object a)
 get =
-    Internal.Object.get
+    Private.Object.get
 
 
 {-|
@@ -325,14 +325,14 @@ update : String -> (a -> Value) -> ObjectId a -> a -> Request { updatedAt : Date
 -}
 update : String -> (b -> Value) -> ObjectId a -> b -> Request { updatedAt : Date }
 update =
-    Internal.Object.update
+    Private.Object.update
 
 
 {-| TODO
 -}
 delete : String -> ObjectId a -> Request {}
 delete =
-    Internal.Object.delete
+    Private.Object.delete
 
 
 
@@ -342,14 +342,14 @@ delete =
 {-| TODO
 -}
 type alias Pointer a =
-    Internal.Pointer.Pointer a
+    Private.Pointer.Pointer a
 
 
 {-| TODO
 -}
 pointer : String -> ObjectId a -> Pointer a
 pointer =
-    Internal.Pointer.pointer
+    Private.Pointer.pointer
 
 
 
@@ -359,7 +359,7 @@ pointer =
 {-| TODO
 -}
 type alias Query =
-    Internal.Query.Query
+    Private.Query.Query
 
 
 {-| TODO
@@ -368,41 +368,41 @@ type alias Query =
 -}
 query : Decoder (Object a) -> Query -> Request (List (Object a))
 query =
-    Internal.Query.query
+    Private.Query.query
 
 
 {-| TODO
 -}
 emptyQuery : String -> Query
 emptyQuery =
-    Internal.Query.emptyQuery
+    Private.Query.emptyQuery
 
 
 {-| TODO
 -}
 regex : String -> String -> Constraint
 regex =
-    Internal.Query.regex
+    Private.Query.regex
 
 
 {-| TODO
 -}
 type alias Constraint =
-    Internal.Query.Constraint
+    Private.Query.Constraint
 
 
 {-| TODO
 -}
 or : List Constraint -> Constraint
 or =
-    Internal.Query.or
+    Private.Query.or
 
 
 {-| TODO
 -}
 and : List Constraint -> Constraint
 and =
-    Internal.Query.and
+    Private.Query.and
 
 
 {-| TODO
@@ -411,7 +411,7 @@ and =
 -}
 notEqualTo : String -> String -> Constraint
 notEqualTo =
-    Internal.Query.notEqualTo
+    Private.Query.notEqualTo
 
 
 {-| TODO
@@ -420,7 +420,7 @@ notEqualTo =
 -}
 lessThanOrEqualTo : String -> Float -> Constraint
 lessThanOrEqualTo =
-    Internal.Query.lessThanOrEqualTo
+    Private.Query.lessThanOrEqualTo
 
 
 {-| TODO
@@ -429,7 +429,7 @@ lessThanOrEqualTo =
 -}
 lessThan : String -> Float -> Constraint
 lessThan =
-    Internal.Query.lessThan
+    Private.Query.lessThan
 
 
 {-| TODO
@@ -438,7 +438,7 @@ lessThan =
 -}
 greaterThanOrEqualTo : String -> Float -> Constraint
 greaterThanOrEqualTo =
-    Internal.Query.greaterThanOrEqualTo
+    Private.Query.greaterThanOrEqualTo
 
 
 {-| TODO
@@ -447,14 +447,14 @@ greaterThanOrEqualTo =
 -}
 greaterThan : String -> Float -> Constraint
 greaterThan =
-    Internal.Query.greaterThan
+    Private.Query.greaterThan
 
 
 {-| TODO
 -}
 exists : String -> Constraint
 exists =
-    Internal.Query.exists
+    Private.Query.exists
 
 
 {-| TODO
@@ -463,14 +463,14 @@ exists =
 -}
 equalTo : String -> String -> Constraint
 equalTo =
-    Internal.Query.equalTo
+    Private.Query.equalTo
 
 
 {-| TODO
 -}
 encodeQuery : Query -> Value
 encodeQuery =
-    Internal.Query.encodeQuery
+    Private.Query.encodeQuery
 
 
 
@@ -481,7 +481,7 @@ encodeQuery =
 -}
 updateUser : (user -> Value) -> ObjectId user -> user -> Request { updatedAt : Date }
 updateUser =
-    Internal.User.updateUser
+    Private.User.updateUser
 
 
 {-| TODO
@@ -495,7 +495,7 @@ signUp :
     -> user
     -> Request { objectId : ObjectId user, createdAt : Date, sessionToken : SessionToken }
 signUp =
-    Internal.User.signUp
+    Private.User.signUp
 
 
 {-| TODO
@@ -506,42 +506,42 @@ logIn :
     -> String
     -> Request { user : Object a, sessionToken : SessionToken }
 logIn =
-    Internal.User.logIn
+    Private.User.logIn
 
 
 {-| TODO
 -}
 passwordResetRequest : String -> Request {}
 passwordResetRequest =
-    Internal.User.passwordResetRequest
+    Private.User.passwordResetRequest
 
 
 {-| TODO
 -}
 emailVerificationRequest : String -> Request {}
 emailVerificationRequest =
-    Internal.User.emailVerificationRequest
+    Private.User.emailVerificationRequest
 
 
 {-| TODO
 -}
 deleteUser : ObjectId a -> Request {}
 deleteUser =
-    Internal.User.deleteUser
+    Private.User.deleteUser
 
 
 {-| TODO
 -}
 getUser : Decoder (Object a) -> ObjectId a -> Request (Object a)
 getUser =
-    Internal.User.getUser
+    Private.User.getUser
 
 
 {-| TODO
 -}
 getCurrentUser : Decoder (Object a) -> Request (Object a)
 getCurrentUser =
-    Internal.User.getCurrentUser
+    Private.User.getCurrentUser
 
 
 -- SESSIONS
@@ -551,7 +551,7 @@ getCurrentUser =
 {-| TODO
 -}
 type alias Session user =
-    Internal.Session.Session user
+    Private.Session.Session user
 
 
 {-| TODO
@@ -566,53 +566,53 @@ createSession :
         , sessionToken : SessionToken
         }
 createSession =
-    Internal.Session.createSession
+    Private.Session.createSession
 
 
 {-| TODO
 -}
 getSession : ObjectId (Session user) -> Request (Object (Session user))
 getSession =
-    Internal.Session.getSession
+    Private.Session.getSession
 
 
 {-| TODO
 -}
 updateSession : (b -> Value) -> ObjectId a -> b -> Request { updatedAt : Date }
 updateSession =
-    Internal.Session.updateSession
+    Private.Session.updateSession
 
 
 {-| TODO
 -}
 getSessions : Request (List (Object (Session user)))
 getSessions =
-    Internal.Session.getSessions
+    Private.Session.getSessions
 
 
 {-| TODO
 -}
 deleteSession : ObjectId (Session user) -> Request {}
 deleteSession =
-    Internal.Session.deleteSession
+    Private.Session.deleteSession
 
 
 {-| TODO
 -}
 type alias CreatedWith =
-    Internal.Session.CreatedWith
+    Private.Session.CreatedWith
 
 
 {-| TODO
 -}
 type alias Action =
-    Internal.Session.Action
+    Private.Session.Action
 
 
 {-| TODO
 -}
 type alias AuthProvider =
-    Internal.Session.AuthProvider
+    Private.Session.AuthProvider
 
 
 
@@ -622,13 +622,13 @@ type alias AuthProvider =
 {-| TODO
 -}
 type alias ACL user =
-    Internal.ACL.ACL user
+    Private.ACL.ACL user
 
 
 {-| TODO
 -}
 type alias RoleName =
-    Internal.ACL.RoleName
+    Private.ACL.RoleName
 
 
 {-| TODO
@@ -640,41 +640,41 @@ acl :
     }
     -> ACL user
 acl =
-    Internal.ACL.acl
+    Private.ACL.acl
 
 
 {-| TODO
 -}
 anybody : ACL user -> Permissions
 anybody =
-    Internal.ACL.anybody
+    Private.ACL.anybody
 
 
 {-| TODO
 -}
 users : ACL user -> List ( Pointer user, Permissions )
 users =
-    Internal.ACL.users
+    Private.ACL.users
 
 
 {-| TODO
 -}
 roles : ACL user -> List ( RoleName, Permissions )
 roles =
-    Internal.ACL.roles
+    Private.ACL.roles
 
 
 {-| TODO
 -}
 type alias Permissions =
-    Internal.ACL.Permissions
+    Private.ACL.Permissions
 
 
 {-| TODO
 -}
 simple : { read : Bool, write : Bool } -> Permissions
 simple =
-    Internal.ACL.simple
+    Private.ACL.simple
 
 
 {-| TODO
@@ -689,19 +689,19 @@ extended :
     }
     -> Permissions
 extended =
-    Internal.ACL.extended
+    Private.ACL.extended
 
 
 {-| TODO
 -}
 type alias Role user =
-    Internal.Role.Role user
+    Private.Role.Role user
 
 
 {-| TODO
 -}
 role =
-    Internal.Role.role
+    Private.Role.role
 
 
 {-| TODO
@@ -712,28 +712,28 @@ createRole :
     -> List (Pointer (Role user))
     -> Request { objectId : ObjectId (Role user), createdAt : Date }
 createRole =
-    Internal.Role.createRole
+    Private.Role.createRole
 
 
 {-| TODO
 -}
 getRole : ObjectId (Role user) -> Request (Object (Role user))
 getRole =
-    Internal.Role.getRole
+    Private.Role.getRole
 
 
 {-| TODO
 -}
 addUsers : ObjectId (Role user) -> List (Pointer user) -> Request { updatedAt : Date }
 addUsers =
-    Internal.Role.addUsers
+    Private.Role.addUsers
 
 
 {-| TODO
 -}
 deleteUsers : ObjectId (Role user) -> List (Pointer user) -> Request { updatedAt : Date }
 deleteUsers =
-    Internal.Role.addUsers
+    Private.Role.addUsers
 
 
 {-| TODO
@@ -743,7 +743,7 @@ addRoles :
     -> List (Pointer (Role user))
     -> Request { updatedAt : Date }
 addRoles =
-    Internal.Role.addRoles
+    Private.Role.addRoles
 
 
 {-| TODO
@@ -753,14 +753,14 @@ deleteRoles :
     -> List (Pointer (Role user))
     -> Request { updatedAt : Date }
 deleteRoles =
-    Internal.Role.addRoles
+    Private.Role.addRoles
 
 
 {-| TODO
 -}
 deleteRole : ObjectId (Role user) -> Request {}
 deleteRole =
-    Internal.Role.deleteRole
+    Private.Role.deleteRole
 
 
 
@@ -770,20 +770,20 @@ deleteRole =
 {-| TODO
 -}
 type alias Error =
-    Internal.Error.Error
+    Private.Error.Error
 
 
 {-| TODO
 -}
 type alias Cause =
-    Internal.Error.Cause
+    Private.Error.Cause
 
 
 {-| TODO
 -}
 code : Cause -> Int
 code =
-    Internal.Error.code
+    Private.Error.code
 
 
 
@@ -793,21 +793,21 @@ code =
 {-| TODO
 -}
 type alias Request a =
-    Internal.Request.Request a
+    Private.Request.Request a
 
 
 {-| TODO
 -}
 toTask : Config -> Request a -> Task Error a
 toTask =
-    Internal.Request.toTask
+    Private.Request.toTask
 
 
 {-| TODO
 -}
 send : Config -> (Result Error a -> m) -> Request a -> Cmd m
 send =
-    Internal.Request.send
+    Private.Request.send
 
 
 -- FILES
@@ -815,7 +815,7 @@ send =
 {-| TODO
 -}
 type alias File =
-    Internal.File.File
+    Private.File.File
 
 
 
@@ -823,48 +823,48 @@ type alias File =
 -}
 name : File -> String
 name =
-    Internal.File.name
+    Private.File.name
 
 
 {-| TODO
 -}
 url : File -> String
 url =
-    Internal.File.url
+    Private.File.url
 
 
 {-| TODO
 -}
 encodeFile : File -> Value
 encodeFile =
-    Internal.File.encodeFile
+    Private.File.encodeFile
 
 
 {-| TODO
 -}
 fileDecoder : Decoder File
 fileDecoder =
-    Internal.File.fileDecoder
+    Private.File.fileDecoder
 
 
 {-| TODO
 -}
 type alias ContentType =
-    Internal.File.ContentType
+    Private.File.ContentType
 
 
 {-| TODO
 -}
 uploadFile : String -> ContentType -> Value -> Request File
 uploadFile =
-    Internal.File.uploadFile
+    Private.File.uploadFile
 
 
 {-| TODO
 -}
 deleteFile : File -> Request {}
 deleteFile =
-    Internal.File.deleteFile
+    Private.File.deleteFile
 
 
 
@@ -874,28 +874,28 @@ deleteFile =
 {-| TODO
 -}
 type alias GeoPoint =
-    Internal.GeoPoint.GeoPoint
+    Private.GeoPoint.GeoPoint
 
 
 {-| TODO
 -}
 geoPoint : { latitude : Float, longitude : Float } -> GeoPoint
 geoPoint =
-    Internal.GeoPoint.geoPoint
+    Private.GeoPoint.geoPoint
 
 
 {-| TODO
 -}
 latitude : GeoPoint -> Float
 latitude =
-    Internal.GeoPoint.latitude
+    Private.GeoPoint.latitude
 
 
 {-| TODO
 -}
 longitude : GeoPoint -> Float
 longitude =
-    Internal.GeoPoint.longitude
+    Private.GeoPoint.longitude
 
 
 
@@ -906,14 +906,14 @@ longitude =
 -}
 getConfig : Decoder a -> Request a
 getConfig =
-    Internal.Config.getConfig
+    Private.Config.getConfig
 
 
 {-| TODO
 -}
 updateConfig : List ( String, Value ) -> Request Bool
 updateConfig =
-    Internal.Config.updateConfig
+    Private.Config.updateConfig
 
 
 
@@ -923,21 +923,21 @@ updateConfig =
 {-| TODO
 -}
 type alias Event a =
-    Internal.Analytics.Event a
+    Private.Analytics.Event a
 
 
 {-| TODO
 -}
 post : (Event a -> List ( String, Value )) -> Event a -> Request {}
 post =
-    Internal.Analytics.post
+    Private.Analytics.post
 
 
 {-| TODO
 -}
 postAt : (Event a -> List ( String, Value )) -> Date -> Event a -> Request {}
 postAt =
-    Internal.Analytics.postAt
+    Private.Analytics.postAt
 
 
 
@@ -948,11 +948,11 @@ postAt =
 -}
 function : String -> Decoder a -> Value -> Request a
 function =
-    Internal.CloudCode.function
+    Private.CloudCode.function
 
 
 {-| TODO
 -}
 job : String -> Value -> Request {}
 job =
-    Internal.CloudCode.job
+    Private.CloudCode.job
