@@ -1,4 +1,9 @@
-module Private.Pointer exposing (Pointer(..), pointer, objectId, className)
+module Private.Pointer exposing
+    ( Pointer(..)
+    , className
+    , objectId
+    , pointer
+    )
 
 import Private.ObjectId exposing (..)
 
@@ -13,14 +18,10 @@ pointer =
 
 
 className : Pointer a -> String
-className pointer =
-    case pointer of
-        Pointer className _ ->
-            className
+className (Pointer className_ _) =
+    className_
 
 
 objectId : Pointer a -> ObjectId a
-objectId pointer =
-    case pointer of
-        Pointer _ objectId ->
-            objectId
+objectId (Pointer _ objectId_) =
+    objectId_

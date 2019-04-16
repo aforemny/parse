@@ -1,28 +1,26 @@
-module Private.Role
-    exposing
-        ( addRoles
-        , addUsers
-        , createRole
-        , deleteRole
-        , deleteRoles
-        , deleteUsers
-        , getRole
-        , role
-        , Role
-        )
+module Private.Role exposing
+    ( Role
+    , addRoles
+    , addUsers
+    , createRole
+    , deleteRole
+    , deleteRoles
+    , deleteUsers
+    , getRole
+    , role
+    )
 
-import Date exposing (Date)
-import Private.ACL as ACL exposing (ACL)
-import Private.Object exposing (Object)
-import Private.ObjectId as ObjectId exposing (ObjectId)
-import Private.Pointer as Pointer exposing (Pointer)
-import Private.Request as Request exposing (request)
-import Private.Request exposing (Request)
 import Json.Decode as Decode exposing (Decoder, Value)
 import Json.Decode.Pipeline as Decode
 import Json.Encode as Encode
 import Parse.Decode as Decode
 import Parse.Encode as Encode
+import Private.ACL as ACL exposing (ACL)
+import Private.Object exposing (Object)
+import Private.ObjectId as ObjectId exposing (ObjectId)
+import Private.Pointer as Pointer exposing (Pointer)
+import Private.Request as Request exposing (Request, request)
+import Time exposing (Posix)
 
 
 type alias Role user =
@@ -41,16 +39,16 @@ role =
 
 
 encode : Role user -> Value
-encode role =
+encode { name, acl } =
     Encode.object
-        [ ( "name", Encode.string role.name )
-        , ( "acl", ACL.encode role.acl )
+        [ ( "name", Encode.string name )
+        , ( "acl", ACL.encode acl )
         ]
 
 
 decode : Decoder (Object (Role user))
 decode =
-    Decode.decode
+    Decode.succeed
         (\objectId createdAt updatedAt name acl ->
             { objectId = objectId
             , createdAt = createdAt
@@ -70,8 +68,8 @@ createRole :
     Role user
     -> List (Pointer user)
     -> List (Pointer (Role user))
-    -> Request { objectId : ObjectId (Role a), createdAt : Date }
-createRole ({ name, acl } as role) users roles =
+    -> Request { objectId : ObjectId (Role a), createdAt : Posix }
+createRole { name, acl } users roles =
     let
         body =
             Encode.object
@@ -79,30 +77,32 @@ createRole ({ name, acl } as role) users roles =
                 , ( "acl", ACL.encode acl )
                 , ( "users"
                   , users
-                        |> List.map (Encode.pointer "_User")
-                        |> \objects ->
-                            Encode.object
-                                [ ( "__op", Encode.string "AddRelation" )
-                                , ( "objects", Encode.list objects )
-                                ]
+                        |> List.map Encode.pointer
+                        |> (\objects ->
+                                Encode.object
+                                    [ ( "__op", Encode.string "AddRelation" )
+                                    , ( "objects", Encode.list identity objects )
+                                    ]
+                           )
                   )
                 , ( "roles"
                   , roles
-                        |> List.map (Encode.pointer "_Role")
-                        |> \objects ->
-                            Encode.object
-                                [ ( "__op", Encode.string "AddRelation" )
-                                , ( "objects", Encode.list objects )
-                                ]
+                        |> List.map Encode.pointer
+                        |> (\objects ->
+                                Encode.object
+                                    [ ( "__op", Encode.string "AddRelation" )
+                                    , ( "objects", Encode.list identity objects )
+                                    ]
+                           )
                   )
                 ]
     in
-        request
-            { method = "POST"
-            , endpoint = "/roles"
-            , body = Just body
-            , decoder = Request.postDecoder
-            }
+    request
+        { method = "POST"
+        , endpoint = "/roles"
+        , body = Just body
+        , decoder = Request.postDecoder
+        }
 
 
 getRole : ObjectId (Role user) -> Request (Object (Role user))
@@ -125,22 +125,22 @@ deleteRole objectId =
         }
 
 
-addUsers : ObjectId (Role user) -> List (Pointer user) -> Request { updatedAt : Date }
+addUsers : ObjectId (Role user) -> List (Pointer user) -> Request { updatedAt : Posix }
 addUsers objectId users =
     request
         { method = "PUT"
         , endpoint = "/roles/" ++ ObjectId.toString objectId
-        , body = Just (Encode.object [ ( "users", addRelation "_User" users ) ])
+        , body = Just (Encode.object [ ( "users", addRelation users ) ])
         , decoder = Request.putDecoder
         }
 
 
-deleteUsers : ObjectId (Role user) -> List (Pointer user) -> Request { updatedAt : Date }
+deleteUsers : ObjectId (Role user) -> List (Pointer user) -> Request { updatedAt : Posix }
 deleteUsers objectId users =
     request
         { method = "PUT"
         , endpoint = "/roles/" ++ ObjectId.toString objectId
-        , body = Just (Encode.object [ ( "users", removeRelation "_User" users ) ])
+        , body = Just (Encode.object [ ( "users", removeRelation users ) ])
         , decoder = Request.putDecoder
         }
 
@@ -148,12 +148,12 @@ deleteUsers objectId users =
 addRoles :
     ObjectId (Role user)
     -> List (Pointer (Role user))
-    -> Request { updatedAt : Date }
+    -> Request { updatedAt : Posix }
 addRoles objectId roles =
     request
         { method = "PUT"
         , endpoint = "/roles/" ++ ObjectId.toString objectId
-        , body = Just (Encode.object [ ( "roles", addRelation "_Role" roles ) ])
+        , body = Just (Encode.object [ ( "roles", addRelation roles ) ])
         , decoder = Request.putDecoder
         }
 
@@ -161,31 +161,31 @@ addRoles objectId roles =
 deleteRoles :
     ObjectId (Role user)
     -> List (Pointer (Role user))
-    -> Request { updatedAt : Date }
+    -> Request { updatedAt : Posix }
 deleteRoles objectId roles =
     request
         { method = "PUT"
         , endpoint = "/roles/" ++ ObjectId.toString objectId
-        , body = Just (Encode.object [ ( "roles", removeRelation "_Role" roles ) ])
+        , body = Just (Encode.object [ ( "roles", removeRelation roles ) ])
         , decoder = Request.putDecoder
         }
 
 
-{-| @todo(aforemny) Move to Pointer
+{-| TODO: move to Pointer
 -}
-addRelation : String -> List (Pointer a) -> Value
-addRelation className pointers =
+addRelation : List (Pointer a) -> Value
+addRelation pointers =
     Encode.object
         [ ( "__op", Encode.string "AddRelation" )
-        , ( "objects", Encode.list (List.map (Encode.pointer className) pointers) )
+        , ( "objects", Encode.list Encode.pointer pointers )
         ]
 
 
-{-| @todo(aforemny) Move to Pointer
+{-| TODO: move to Pointer
 -}
-removeRelation : String -> List (Pointer a) -> Value
-removeRelation className pointers =
+removeRelation : List (Pointer a) -> Value
+removeRelation pointers =
     Encode.object
         [ ( "__op", Encode.string "RemoveRelation" )
-        , ( "objects", Encode.list (List.map (Encode.pointer className) pointers) )
+        , ( "objects", Encode.list Encode.pointer pointers )
         ]

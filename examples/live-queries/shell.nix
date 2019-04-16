@@ -1,11 +1,11 @@
 { pkgs ? import <nixpkgs> {} }:
-
-pkgs.stdenv.mkDerivation {
+with pkgs;
+with stdenv;
+mkDerivation {
   name = "live-queries";
   buildInputs = [
-    pkgs.elmPackages.elm-make 
-    pkgs.elmPackages.elm-package
+    pkgs.elmPackages.elm
     pkgs.mongodb
-    pkgs.nodejs-8_x
+    pkgs.nodejs
   ];
 }

@@ -1,16 +1,16 @@
-module Private.Session exposing (..)
+module Private.Session exposing (Action(..), AuthProvider(..), CreatedWith(..), Session, actionDecoder, authProviderDecoder, createDecoder, createSession, createdWithDecoder, deleteSession, encodeAction, encodeAuthProvider, encodeCreatedWith, encodeSession, getSession, getSessions, sessionDecoder, updateSession)
 
-import Date exposing (Date)
-import Private.Object as Object exposing (Object)
-import Private.ObjectId as ObjectId exposing (ObjectId)
-import Private.Pointer as Pointer exposing (Pointer)
-import Private.Request as Request exposing (Request, request)
-import Private.SessionToken as SessionToken exposing (SessionToken)
 import Json.Decode as Decode exposing (Decoder, Value)
 import Json.Decode.Pipeline as Decode
 import Json.Encode as Encode
 import Parse.Decode as Decode
 import Parse.Encode as Encode
+import Private.Object as Object exposing (Object)
+import Private.ObjectId as ObjectId exposing (ObjectId)
+import Private.Pointer as Pointer exposing (Pointer)
+import Private.Request as Request exposing (Request, request)
+import Private.SessionToken as SessionToken exposing (SessionToken)
+import Time exposing (Posix)
 
 
 type alias Session user =
@@ -18,7 +18,7 @@ type alias Session user =
     , user : Pointer user
     , createdWith : CreatedWith
     , restricted : Bool
-    , expiresAt : Date
+    , expiresAt : Posix
     , installationId : String
     }
 
@@ -27,7 +27,7 @@ encodeSession : Session user -> Value
 encodeSession session =
     Encode.object
         [ ( "sessionToken", Encode.sessionToken session.sessionToken )
-        , ( "user", Encode.pointer "_User" session.user )
+        , ( "user", Encode.pointer session.user )
         , ( "createdWith", encodeCreatedWith session.createdWith )
         , ( "restricted", Encode.bool session.restricted )
         , ( "expiresAt", Encode.date session.expiresAt )
@@ -37,7 +37,7 @@ encodeSession session =
 
 sessionDecoder : Decoder (Object (Session user))
 sessionDecoder =
-    Decode.decode
+    Decode.succeed
         (\objectId createdAt updatedAt sessionToken user createdWith restricted expiresAt installationId ->
             { objectId = objectId
             , createdAt = createdAt
@@ -63,13 +63,14 @@ sessionDecoder =
 
 createSession :
     Session user
-    -> Request
-        { createdAt : Date
-        , createdWith : CreatedWith
-        , objectId : ObjectId (Session user)
-        , restricted : Bool
-        , sessionToken : SessionToken
-        }
+    ->
+        Request
+            { createdAt : Posix
+            , createdWith : CreatedWith
+            , objectId : ObjectId (Session user)
+            , restricted : Bool
+            , sessionToken : SessionToken
+            }
 createSession session =
     request
         { method = "POST"
@@ -89,7 +90,7 @@ getSession objectId =
         }
 
 
-updateSession : (b -> Value) -> ObjectId a -> b -> Request { updatedAt : Date }
+updateSession : (b -> Value) -> ObjectId a -> b -> Request { updatedAt : Posix }
 updateSession encodeObject objectId object =
     request
         { method = "PUT"
@@ -121,14 +122,14 @@ deleteSession objectId =
 
 createDecoder :
     Decoder
-        { createdAt : Date
+        { createdAt : Posix
         , createdWith : CreatedWith
         , objectId : ObjectId (Session user)
         , restricted : Bool
         , sessionToken : SessionToken
         }
 createDecoder =
-    Decode.decode
+    Decode.succeed
         (\createdAt createdWith objectId restricted sessionToken ->
             { createdAt = createdAt
             , createdWith = createdWith
@@ -152,18 +153,16 @@ type CreatedWith
 
 
 encodeCreatedWith : CreatedWith -> Value
-encodeCreatedWith createdWith =
-    case createdWith of
-        CreatedWith createdWith ->
-            Encode.object
-                [ ( "action", encodeAction createdWith.action )
-                , ( "authProvider", encodeAuthProvider createdWith.authProvider )
-                ]
+encodeCreatedWith (CreatedWith createdWith_) =
+    Encode.object
+        [ ( "action", encodeAction createdWith_.action )
+        , ( "authProvider", encodeAuthProvider createdWith_.authProvider )
+        ]
 
 
 createdWithDecoder : Decoder CreatedWith
 createdWithDecoder =
-    Decode.decode
+    Decode.succeed
         (\action authProvider ->
             CreatedWith { action = action, authProvider = authProvider }
         )

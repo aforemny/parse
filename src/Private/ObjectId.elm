@@ -6,10 +6,8 @@ type ObjectId a
 
 
 toString : ObjectId a -> String
-toString objectId =
-    case objectId of
-        ObjectId objectId ->
-            objectId
+toString (ObjectId objectId) =
+    objectId
 
 
 fromString : String -> ObjectId a

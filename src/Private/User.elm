@@ -1,15 +1,16 @@
-module Private.User exposing (..)
+module Private.User exposing (deleteUser, emailVerificationRequest, getCurrentUser, getUser, logIn, passwordResetRequest, signUp, updateUser)
 
-import Date exposing (Date)
 import Http
-import Private.Object as Object exposing (Object)
-import Private.ObjectId as ObjectId exposing (ObjectId)
-import Private.Request as Request exposing (Request, request, requestWithAdditionalHeaders)
-import Private.SessionToken as SessionToken exposing (SessionToken)
 import Json.Decode as Decode exposing (Decoder, Value)
 import Json.Decode.Pipeline as Decode
 import Json.Encode as Encode
 import Parse.Decode as Decode
+import Private.Object as Object exposing (Object)
+import Private.ObjectId as ObjectId exposing (ObjectId)
+import Private.Request as Request exposing (Request, request, requestWithAdditionalHeaders)
+import Private.SessionToken as SessionToken exposing (SessionToken)
+import Time exposing (Posix)
+import Url
 
 
 signUp :
@@ -17,11 +18,12 @@ signUp :
     -> String
     -> String
     -> user
-    -> Request
-        { createdAt : Date
-        , objectId : ObjectId a
-        , sessionToken : SessionToken
-        }
+    ->
+        Request
+            { createdAt : Posix
+            , objectId : ObjectId a
+            , sessionToken : SessionToken
+            }
 signUp encodeUser username password user =
     let
         body =
@@ -44,35 +46,35 @@ signUp encodeUser username password user =
                 (Decode.field "objectId" Decode.objectId)
                 (Decode.field "sessionToken" Decode.sessionToken)
     in
-        requestWithAdditionalHeaders
-            { method = "POST"
-            , additionalHeaders =
-                [ Http.header "X-Parse-Revocable-Session" (toString 1)
-                ]
-            , endpoint = "/users"
-            , body = Just body
-            , decoder =
-                Decode.decode
-                    (\objectId createdAt sessionToken ->
-                        { objectId = objectId
-                        , createdAt = createdAt
-                        , sessionToken = sessionToken
-                        }
-                    )
-                    |> Decode.required "objectId" Decode.objectId
-                    |> Decode.required "createdAt" Decode.date
-                    |> Decode.required "sessionToken" SessionToken.decode
-            }
+    requestWithAdditionalHeaders
+        { method = "POST"
+        , additionalHeaders =
+            [ Http.header "X-Parse-Revocable-Session" "1" ]
+        , endpoint = "/users"
+        , body = Just body
+        , decoder =
+            Decode.succeed
+                (\objectId createdAt sessionToken ->
+                    { objectId = objectId
+                    , createdAt = createdAt
+                    , sessionToken = sessionToken
+                    }
+                )
+                |> Decode.required "objectId" Decode.objectId
+                |> Decode.required "createdAt" Decode.date
+                |> Decode.required "sessionToken" SessionToken.decode
+        }
 
 
 logIn :
     Decoder user
     -> String
     -> String
-    -> Request
-        { user : user
-        , sessionToken : SessionToken
-        }
+    ->
+        Request
+            { user : user
+            , sessionToken : SessionToken
+            }
 logIn userDecoder username password =
     let
         decoder =
@@ -85,21 +87,21 @@ logIn userDecoder username password =
                 userDecoder
                 (Decode.field "sessionToken" Decode.sessionToken)
     in
-        requestWithAdditionalHeaders
-            { method = "GET"
-            , additionalHeaders =
-                [ Http.header "X-Parse-Revocable-Session" (toString 1)
-                ]
-            , endpoint =
+    requestWithAdditionalHeaders
+        { method = "GET"
+        , additionalHeaders =
+            [ Http.header "X-Parse-Revocable-Session" "1"
+            ]
+        , endpoint =
+            String.concat
                 [ "/login?username="
-                , Http.encodeUri username
+                , Url.percentEncode username
                 , "&password="
-                , Http.encodeUri password
+                , Url.percentEncode password
                 ]
-                    |> String.concat
-            , body = Nothing
-            , decoder = decoder
-            }
+        , body = Nothing
+        , decoder = decoder
+        }
 
 
 emailVerificationRequest : String -> Request {}
@@ -146,7 +148,7 @@ updateUser :
     (user -> Value)
     -> ObjectId a
     -> user
-    -> Request { updatedAt : Date }
+    -> Request { updatedAt : Posix }
 updateUser encodeUser objectId user =
     request
         { method = "PUT"

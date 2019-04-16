@@ -1,10 +1,11 @@
-module Private.File exposing (..)
+module Private.File exposing (ContentType, File(..), deleteFile, encodeFile, fileDecoder, name, uploadFile, url)
 
 import Http
-import Private.Request as Request exposing (Request, request, requestWithAdditionalHeaders)
 import Json.Decode as Decode exposing (Decoder, Value)
 import Json.Decode.Pipeline as Decode
 import Json.Encode as Encode
+import Private.Request as Request exposing (Request, request, requestWithAdditionalHeaders)
+import Url
 
 
 type File
@@ -15,32 +16,26 @@ type File
 
 
 name : File -> String
-name file =
-    case file of
-        File { name } ->
-            name
+name (File file_) =
+    file_.name
 
 
 url : File -> String
-url file =
-    case file of
-        File { url } ->
-            url
+url (File file_) =
+    file_.url
 
 
 encodeFile : File -> Value
 encodeFile file =
-    case file of
-        File file ->
-            Encode.object
-                [ ( "name", Encode.string file.name )
-                , ( "url", Encode.string file.url )
-                ]
+    Encode.object
+        [ ( "name", Encode.string (name file) )
+        , ( "url", Encode.string (url file) )
+        ]
 
 
 fileDecoder : Decoder File
 fileDecoder =
-    Decode.decode (\name url -> File { name = name, url = url })
+    Decode.succeed (\name_ url_ -> File { name = name_, url = url_ })
         |> Decode.required "name" Decode.string
         |> Decode.required "url" Decode.string
 
@@ -54,7 +49,7 @@ uploadFile fileName contentType file =
     requestWithAdditionalHeaders
         { method = "POST"
         , additionalHeaders = [ Http.header "Content-Type" contentType ]
-        , endpoint = "/files/" ++ Http.encodeUri fileName
+        , endpoint = "/files/" ++ Url.percentEncode fileName
         , body = Just file
         , decoder = fileDecoder
         }

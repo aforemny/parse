@@ -1,8 +1,8 @@
 build:
-	nix-shell shell.nix --run "elm-make Main.elm"
+	elm make Main.elm
 
 setup:
-	nix-shell --run "npm i"
+	npm i
 
 parse:
-	nix-shell --run "npm start"
+	npm start

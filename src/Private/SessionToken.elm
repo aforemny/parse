@@ -1,11 +1,10 @@
-module Private.SessionToken
-    exposing
-        ( SessionToken(..)
-        , toString
-        , fromString
-        , decode
-        , encode
-        )
+module Private.SessionToken exposing
+    ( SessionToken(..)
+    , decode
+    , encode
+    , fromString
+    , toString
+    )
 
 import Json.Decode as Decode exposing (Decoder, Value)
 import Json.Encode as Encode
@@ -16,10 +15,8 @@ type SessionToken
 
 
 toString : SessionToken -> String
-toString sessionToken =
-    case sessionToken of
-        SessionToken sessionToken ->
-            sessionToken
+toString (SessionToken sessionToken) =
+    sessionToken
 
 
 fromString : String -> SessionToken

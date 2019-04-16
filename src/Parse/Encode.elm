@@ -1,10 +1,9 @@
-module Parse.Encode
-    exposing
-        ( date
-        , objectId
-        , pointer
-        , sessionToken
-        )
+module Parse.Encode exposing
+    ( sessionToken
+    , objectId
+    , date
+    , pointer
+    )
 
 {-|
 
@@ -18,12 +17,12 @@ module Parse.Encode
 
 -}
 
-import Date exposing (Date)
-import Private.ObjectId exposing (..)
-import Private.Pointer exposing (Pointer(..))
-import Private.SessionToken exposing (..)
+import Iso8601
 import Json.Encode as Encode exposing (Value)
-import Time.DateTime
+import Private.ObjectId exposing (..)
+import Private.Pointer as Pointer exposing (Pointer)
+import Private.SessionToken exposing (..)
+import Time exposing (Posix)
 
 
 {-| -}
@@ -39,27 +38,19 @@ objectId (ObjectId id) =
 
 
 {-| -}
-date : Date -> Value
-date date =
-    [ ( "__type", Encode.string "Date" )
-    , ( "iso"
-      , date
-            |> Date.toTime
-            |> Time.DateTime.fromTimestamp
-            |> Time.DateTime.toISO8601
-            |> Encode.string
-      )
-    ]
-        |> Encode.object
+date : Posix -> Value
+date posix =
+    Encode.object
+        [ ( "__type", Encode.string "Date" )
+        , ( "iso", Encode.string (Iso8601.fromTime posix) )
+        ]
 
 
 {-| -}
-pointer : String -> Pointer a -> Value
-pointer className pointer =
-  case pointer of
-    Pointer className id ->
+pointer : Pointer a -> Value
+pointer pointer_ =
+    Encode.object
         [ ( "__type", Encode.string "Pointer" )
-        , ( "className", Encode.string className )
-        , ( "objectId", objectId id )
+        , ( "className", Encode.string (Pointer.className pointer_) )
+        , ( "objectId", objectId (Pointer.objectId pointer_) )
         ]
-            |> Encode.object

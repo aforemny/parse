@@ -1,9 +1,12 @@
-module Private.Error exposing (Error(..), Cause, errorDecoder, code)
+module Private.Error exposing (Cause, Error(..), code, errorDecoder)
 
 import Http
 import Json.Decode as Decode exposing (Decoder, Value)
 
+
 {-| -}
+
+
 
 ---- ERRORS
 
@@ -260,181 +263,183 @@ causeDecoder : Decoder Cause
 causeDecoder =
     Decode.int
         |> Decode.andThen
-            (\code ->
-                case code of
-                    (-1) ->
-                        Decode.succeed OtherCause
+            (\intCode ->
+                if intCode == -1 then
+                    -- TODO: elm-format
+                    Decode.succeed OtherCause
 
-                    1 ->
-                        Decode.succeed InternalServerError
+                else
+                    case intCode of
+                        1 ->
+                            Decode.succeed InternalServerError
 
-                    100 ->
-                        Decode.succeed ConnectionFailed
+                        100 ->
+                            Decode.succeed ConnectionFailed
 
-                    101 ->
-                        Decode.succeed ObjectNotFound
+                        101 ->
+                            Decode.succeed ObjectNotFound
 
-                    102 ->
-                        Decode.succeed InvalidQuery
+                        102 ->
+                            Decode.succeed InvalidQuery
 
-                    103 ->
-                        Decode.succeed InvalidClassName
+                        103 ->
+                            Decode.succeed InvalidClassName
 
-                    104 ->
-                        Decode.succeed MissingObjectId
+                        104 ->
+                            Decode.succeed MissingObjectId
 
-                    105 ->
-                        Decode.succeed InvalidKeyName
+                        105 ->
+                            Decode.succeed InvalidKeyName
 
-                    106 ->
-                        Decode.succeed InvalidPointer
+                        106 ->
+                            Decode.succeed InvalidPointer
 
-                    107 ->
-                        Decode.succeed InvalidJSON
+                        107 ->
+                            Decode.succeed InvalidJSON
 
-                    108 ->
-                        Decode.succeed CommandUnavailable
+                        108 ->
+                            Decode.succeed CommandUnavailable
 
-                    109 ->
-                        Decode.succeed NotInitialized
+                        109 ->
+                            Decode.succeed NotInitialized
 
-                    111 ->
-                        Decode.succeed IncorrectType
+                        111 ->
+                            Decode.succeed IncorrectType
 
-                    112 ->
-                        Decode.succeed InvalidChannelName
+                        112 ->
+                            Decode.succeed InvalidChannelName
 
-                    115 ->
-                        Decode.succeed PushMisconfigured
+                        115 ->
+                            Decode.succeed PushMisconfigured
 
-                    116 ->
-                        Decode.succeed ObjectTooLarge
+                        116 ->
+                            Decode.succeed ObjectTooLarge
 
-                    119 ->
-                        Decode.succeed OperationForbidden
+                        119 ->
+                            Decode.succeed OperationForbidden
 
-                    120 ->
-                        Decode.succeed CacheMiss
+                        120 ->
+                            Decode.succeed CacheMiss
 
-                    121 ->
-                        Decode.succeed InvalidNestedKey
+                        121 ->
+                            Decode.succeed InvalidNestedKey
 
-                    122 ->
-                        Decode.succeed InvalidFileName
+                        122 ->
+                            Decode.succeed InvalidFileName
 
-                    123 ->
-                        Decode.succeed InvalidACL
+                        123 ->
+                            Decode.succeed InvalidACL
 
-                    124 ->
-                        Decode.succeed Timeout
+                        124 ->
+                            Decode.succeed Timeout
 
-                    125 ->
-                        Decode.succeed InvalidEmailAddress
+                        125 ->
+                            Decode.succeed InvalidEmailAddress
 
-                    126 ->
-                        Decode.succeed MissingContentType
+                        126 ->
+                            Decode.succeed MissingContentType
 
-                    127 ->
-                        Decode.succeed MissingContentLength
+                        127 ->
+                            Decode.succeed MissingContentLength
 
-                    128 ->
-                        Decode.succeed InvalidContentType
+                        128 ->
+                            Decode.succeed InvalidContentType
 
-                    129 ->
-                        Decode.succeed FileTooLarge
+                        129 ->
+                            Decode.succeed FileTooLarge
 
-                    130 ->
-                        Decode.succeed FileSaveError
+                        130 ->
+                            Decode.succeed FileSaveError
 
-                    137 ->
-                        Decode.succeed DuplicateValue
+                        137 ->
+                            Decode.succeed DuplicateValue
 
-                    139 ->
-                        Decode.succeed InvalidRoleName
+                        139 ->
+                            Decode.succeed InvalidRoleName
 
-                    140 ->
-                        Decode.succeed ExceededQuota
+                        140 ->
+                            Decode.succeed ExceededQuota
 
-                    141 ->
-                        Decode.succeed ScriptFailed
+                        141 ->
+                            Decode.succeed ScriptFailed
 
-                    142 ->
-                        Decode.succeed ValidationError
+                        142 ->
+                            Decode.succeed ValidationError
 
-                    143 ->
-                        Decode.succeed InvalidImageData
+                        143 ->
+                            Decode.succeed InvalidImageData
 
-                    151 ->
-                        Decode.succeed UnsavedFileError
+                        151 ->
+                            Decode.succeed UnsavedFileError
 
-                    152 ->
-                        Decode.succeed InvalidPushTimeError
+                        152 ->
+                            Decode.succeed InvalidPushTimeError
 
-                    153 ->
-                        Decode.succeed FileDeleteError
+                        153 ->
+                            Decode.succeed FileDeleteError
 
-                    155 ->
-                        Decode.succeed RequestLimitExceeded
+                        155 ->
+                            Decode.succeed RequestLimitExceeded
 
-                    160 ->
-                        Decode.succeed InvalidEventName
+                        160 ->
+                            Decode.succeed InvalidEventName
 
-                    200 ->
-                        Decode.succeed UsernameMissing
+                        200 ->
+                            Decode.succeed UsernameMissing
 
-                    201 ->
-                        Decode.succeed Passwordmissing
+                        201 ->
+                            Decode.succeed Passwordmissing
 
-                    202 ->
-                        Decode.succeed UsernameTaken
+                        202 ->
+                            Decode.succeed UsernameTaken
 
-                    203 ->
-                        Decode.succeed EmailTaken
+                        203 ->
+                            Decode.succeed EmailTaken
 
-                    204 ->
-                        Decode.succeed EmailMissing
+                        204 ->
+                            Decode.succeed EmailMissing
 
-                    205 ->
-                        Decode.succeed EmailNotFound
+                        205 ->
+                            Decode.succeed EmailNotFound
 
-                    206 ->
-                        Decode.succeed SessionMissing
+                        206 ->
+                            Decode.succeed SessionMissing
 
-                    207 ->
-                        Decode.succeed MustCreateUserThroughSignup
+                        207 ->
+                            Decode.succeed MustCreateUserThroughSignup
 
-                    208 ->
-                        Decode.succeed AccountAlreadyLinked
+                        208 ->
+                            Decode.succeed AccountAlreadyLinked
 
-                    209 ->
-                        Decode.succeed InvalidSessionToken
+                        209 ->
+                            Decode.succeed InvalidSessionToken
 
-                    250 ->
-                        Decode.succeed LinkedIdMissing
+                        250 ->
+                            Decode.succeed LinkedIdMissing
 
-                    251 ->
-                        Decode.succeed InvalidLinkedSession
+                        251 ->
+                            Decode.succeed InvalidLinkedSession
 
-                    252 ->
-                        Decode.succeed UnsupportedService
+                        252 ->
+                            Decode.succeed UnsupportedService
 
-                    255 ->
-                        Decode.succeed InvalidSchemaOperation
+                        255 ->
+                            Decode.succeed InvalidSchemaOperation
 
-                    600 ->
-                        Decode.succeed AggregateError
+                        600 ->
+                            Decode.succeed AggregateError
 
-                    601 ->
-                        Decode.succeed FileReadError
+                        601 ->
+                            Decode.succeed FileReadError
 
-                    602 ->
-                        Decode.succeed XDomainRequest
+                        602 ->
+                            Decode.succeed XDomainRequest
 
-                    _ ->
-                        [ "'"
-                        , toString code
-                        , "' is not a valid Parse error code"
-                        ]
-                            |> String.concat
-                            |> Decode.fail
+                        _ ->
+                            [ "'"
+                            , String.fromInt intCode
+                            , "' is not a valid Parse error code"
+                            ]
+                                |> String.concat
+                                |> Decode.fail
             )

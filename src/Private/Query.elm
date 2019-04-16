@@ -1,23 +1,45 @@
-module Private.Query exposing (..)
+module Private.Query exposing
+    ( Constraint(..)
+    , FieldConstraint(..)
+    , Query
+    , and
+    , emptyQuery
+    , encodeConstraint
+    , encodeConstraintHelp
+    , encodeFieldConstraint
+    , encodeQuery
+    , equalTo
+    , exists
+    , greaterThan
+    , greaterThanOrEqualTo
+    , lessThan
+    , lessThanOrEqualTo
+    , notEqualTo
+    , or
+    , query
+    , regex
+    , serializeQuery
+    )
 
 import Dict exposing (Dict)
 import Http
+import Json.Decode as Decode exposing (Decoder, Value)
+import Json.Encode as Encode
 import Private.Error exposing (Error)
 import Private.Object exposing (Object)
 import Private.Request as Requet exposing (Request, request)
-import Json.Decode as Decode exposing (Decoder, Value)
-import Json.Encode as Encode
 import Task exposing (Task)
+import Url
 
 
 query :
     Decoder (Object a)
     -> Query
     -> Request (List (Object a))
-query objectDecoder query =
+query objectDecoder query_ =
     request
         { method = "GET"
-        , endpoint = "/classes/" ++ query.className ++ "?" ++ serializeQuery query
+        , endpoint = "/classes/" ++ query_.className ++ "?" ++ serializeQuery query_
         , body = Nothing
         , decoder = Decode.field "results" (Decode.list objectDecoder)
         }
@@ -27,13 +49,15 @@ type alias Query =
     { className : String
     , whereClause :
         Constraint
-        -- RESPONSE
+
+    -- RESPONSE
     , order : List String
     , keys : List String
     , include : List String
     , count :
         Bool
-        -- PAGINATION
+
+    -- PAGINATION
     , limit : Maybe Int
     , skip : Maybe Int
     }
@@ -53,44 +77,49 @@ emptyQuery className =
 
 
 encodeQuery : Query -> Value
-encodeQuery query =
+encodeQuery query_ =
     let
         required key value =
             Just ( key, value )
 
         optional key encode value =
-            Maybe.map (\value -> ( key, encode value )) value
+            Maybe.map (\value_ -> ( key, encode value_ )) value
     in
-        [ required "className" (Encode.string query.className)
-        , required "where" (encodeConstraint query.whereClause)
-        , if query.include == [] then
-            Nothing
-          else
-            required "include" (Encode.string (String.join "," query.include))
-        , if query.count then
-            required "count" (Encode.int 1)
-          else
-            Nothing
-        , if query.keys == [] then
-            Nothing
-          else
-            required "keys" (Encode.string (String.join "," query.keys))
-        , optional "limit" Encode.int query.limit
-        , query.skip
-            |> Maybe.andThen
-                (\skip ->
-                    if skip <= 0 then
-                        Nothing
-                    else
-                        required "skip" (Encode.int skip)
-                )
-        , if query.order == [] then
-            Nothing
-          else
-            required "order" (Encode.string (String.join "," query.order))
-        ]
-            |> List.filterMap identity
-            |> Encode.object
+    [ required "className" (Encode.string query_.className)
+    , required "where" (encodeConstraint query_.whereClause)
+    , if query_.include == [] then
+        Nothing
+
+      else
+        required "include" (Encode.string (String.join "," query_.include))
+    , if query_.count then
+        required "count" (Encode.int 1)
+
+      else
+        Nothing
+    , if query_.keys == [] then
+        Nothing
+
+      else
+        required "keys" (Encode.string (String.join "," query_.keys))
+    , optional "limit" Encode.int query_.limit
+    , query_.skip
+        |> Maybe.andThen
+            (\skip ->
+                if skip <= 0 then
+                    Nothing
+
+                else
+                    required "skip" (Encode.int skip)
+            )
+    , if query_.order == [] then
+        Nothing
+
+      else
+        required "order" (Encode.string (String.join "," query_.order))
+    ]
+        |> List.filterMap identity
+        |> Encode.object
 
 
 type Constraint
@@ -156,23 +185,23 @@ and constraints =
                     , constraint :: otherConstraints
                     )
     in
-        constraints
-            |> List.foldr flattenNestedAnds []
-            |> List.foldr mergeFieldConstraints ( Dict.empty, [] )
-            |> Tuple.mapFirst
-                (\fieldConstraints ->
-                    fieldConstraints
-                        |> Dict.foldl
-                            (\fieldName actualFieldConstraints result ->
-                                Field fieldName actualFieldConstraints
-                                    :: result
-                            )
-                            []
-                )
-            |> (\( fieldConstraints, otherConstraints ) ->
-                    fieldConstraints ++ otherConstraints
-               )
-            |> And
+    constraints
+        |> List.foldr flattenNestedAnds []
+        |> List.foldr mergeFieldConstraints ( Dict.empty, [] )
+        |> Tuple.mapFirst
+            (\fieldConstraints ->
+                fieldConstraints
+                    |> Dict.foldl
+                        (\fieldName actualFieldConstraints result ->
+                            Field fieldName actualFieldConstraints
+                                :: result
+                        )
+                        []
+            )
+        |> (\( fieldConstraints, otherConstraints ) ->
+                fieldConstraints ++ otherConstraints
+           )
+        |> And
 
 
 or : List Constraint -> Constraint
@@ -225,34 +254,38 @@ regex fieldName =
 
 
 serializeQuery : Query -> String
-serializeQuery query =
+serializeQuery query_ =
     [ [ "where="
-      , encodeConstraint query.whereClause
+      , encodeConstraint query_.whereClause
             |> Encode.encode 0
-            |> Http.encodeUri
+            |> Url.percentEncode
       ]
         |> String.concat
         |> Just
-    , if List.isEmpty query.order then
+    , if List.isEmpty query_.order then
         Nothing
+
       else
-        Just (String.join "," query.order)
-    , if List.isEmpty query.keys then
+        Just (String.join "," query_.order)
+    , if List.isEmpty query_.keys then
         Nothing
+
       else
-        Just (String.join "," query.keys)
-    , if List.isEmpty query.include then
+        Just (String.join "," query_.keys)
+    , if List.isEmpty query_.include then
         Nothing
+
       else
-        Just ("include=" ++ String.join "," query.include)
-    , if query.count then
+        Just ("include=" ++ String.join "," query_.include)
+    , if query_.count then
         Just "count=1"
+
       else
         Nothing
-    , query.limit
-        |> Maybe.map (\limit -> "limit=" ++ toString limit)
-    , query.skip
-        |> Maybe.map (\skip -> "skip=" ++ toString skip)
+    , query_.limit
+        |> Maybe.map (\limit -> "limit=" ++ String.fromInt limit)
+    , query_.skip
+        |> Maybe.map (\skip -> "skip=" ++ String.fromInt skip)
     ]
         |> List.filterMap identity
         |> String.join "&"
@@ -275,9 +308,7 @@ encodeConstraintHelp constraint =
 
         Or constraints ->
             [ ( "$or"
-              , constraints
-                    |> List.map (encodeConstraintHelp >> Encode.object)
-                    |> Encode.list
+              , Encode.list (encodeConstraintHelp >> Encode.object) constraints
               )
             ]
 
@@ -286,8 +317,8 @@ encodeConstraintHelp constraint =
                 fieldEqualTo =
                     fieldConstraints
                         |> List.filterMap
-                            (\constraint ->
-                                case constraint of
+                            (\constraint_ ->
+                                case constraint_ of
                                     EqualTo value ->
                                         Just value
 
@@ -296,17 +327,17 @@ encodeConstraintHelp constraint =
                             )
                         |> List.head
             in
-                [ ( fieldName
-                  , case fieldEqualTo of
-                        Just value ->
-                            value
+            [ ( fieldName
+              , case fieldEqualTo of
+                    Just value ->
+                        value
 
-                        Nothing ->
-                            fieldConstraints
-                                |> List.filterMap encodeFieldConstraint
-                                |> Encode.object
-                  )
-                ]
+                    Nothing ->
+                        fieldConstraints
+                            |> List.filterMap encodeFieldConstraint
+                            |> Encode.object
+              )
+            ]
 
 
 encodeFieldConstraint : FieldConstraint -> Maybe ( String, Value )
@@ -320,9 +351,9 @@ encodeFieldConstraint fieldConstraint =
             Just
                 ( "$ne", value )
 
-        Regex regex ->
+        Regex regex_ ->
             Just
-                ( "$regex", Encode.string regex )
+                ( "$regex", Encode.string regex_ )
 
         LessThan float ->
             Just

@@ -1,20 +1,21 @@
 module Main exposing (main)
 
-import Date exposing (Date)
+import Browser
+import Html exposing (Html)
 import Html.Attributes as Attributes
 import Html.Events as Events
-import Html exposing (Html)
 import Json.Decode as Decode exposing (Decoder)
 import Json.Decode.Pipeline as Decode
 import Json.Encode as Encode exposing (Value)
-import Parse.Decode as Parse
 import Parse exposing (Error, Object, ObjectId, Query)
+import Parse.Decode as Parse
 import Task exposing (Task)
+import Time exposing (Posix)
 
 
-main : Program Never Model Msg
+main : Program {} Model Msg
 main =
-    Html.program
+    Browser.element
         { init = init
         , update = update
         , subscriptions = subscriptions
@@ -31,8 +32,27 @@ type alias Model =
     }
 
 
-init : ( Model, Cmd Msg )
-init =
+type Msg
+    = TitleUpdated String
+    | DescriptionUpdated String
+    | FormSubmitted
+    | EventCreated { createdAt : Posix, objectId : ObjectId Event }
+    | EventCreateFailed Error
+    | EventReceived (Object Event)
+    | EventGetFailed Error
+    | EventsReceived (List (Object Event))
+    | EventGetAllFailed Error
+    | DeleteEventClicked (ObjectId Event)
+    | EventDeleted {}
+    | EventDeleteFailed Error
+      -- FILTER
+    | FilterFormSubmitted
+    | TitleQueryUpdated String
+    | DescriptionQueryUpdated String
+
+
+init : {} -> ( Model, Cmd Msg )
+init flags =
     ( { title = ""
       , description = ""
       , events = []
@@ -52,32 +72,14 @@ init =
     )
 
 
-
----- UPDATE
-
-
-type Msg
-    = TitleUpdated String
-    | DescriptionUpdated String
-    | FormSubmitted
-    | EventCreated { createdAt : Date, objectId : ObjectId Event }
-    | EventCreateFailed Error
-    | EventReceived (Object Event)
-    | EventGetFailed Error
-    | EventsReceived (List (Object Event))
-    | EventGetAllFailed Error
-    | DeleteEventClicked (ObjectId Event)
-    | EventDeleted {}
-    | EventDeleteFailed Error
-      -- FILTER
-    | FilterFormSubmitted
-    | TitleQueryUpdated String
-    | DescriptionQueryUpdated String
+subscriptions : Model -> Sub Msg
+subscriptions model =
+    Sub.none
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
-    case Debug.log "msg" msg of
+    case msg of
         TitleUpdated newTitle ->
             ( { model | title = newTitle }
             , Cmd.none
@@ -231,9 +233,6 @@ parseConfig =
     }
 
 
-
----- CLASSES
-
 type alias Event =
     { title : String
     , description : String
@@ -242,28 +241,28 @@ type alias Event =
 
 createEvent :
     Event
-    -> Task Error { createdAt : Date, objectId : ObjectId Event }
+    -> Task Error { createdAt : Posix, objectId : ObjectId Event }
 createEvent event =
     Parse.toTask parseConfig <|
-      Parse.create "Event" encodeEvent event
+        Parse.create "Event" encodeEvent event
 
 
 getEvent : ObjectId Event -> Task Error (Object Event)
 getEvent objectId =
     Parse.toTask parseConfig <|
-      Parse.get "Event" eventDecoder objectId
+        Parse.get "Event" eventDecoder objectId
 
 
 getAllEvents : Task Error (List (Object Event))
 getAllEvents =
-  Parse.toTask parseConfig <|
-    Parse.query eventDecoder (Parse.emptyQuery "Event")
+    Parse.toTask parseConfig <|
+        Parse.query eventDecoder (Parse.emptyQuery "Event")
 
 
 deleteEvent : ObjectId Event -> Task Error {}
 deleteEvent objectId =
-  Parse.toTask parseConfig <|
-    Parse.delete "Event" objectId
+    Parse.toTask parseConfig <|
+        Parse.delete "Event" objectId
 
 
 encodeEvent : { title : String, description : String } -> Value
@@ -276,32 +275,20 @@ encodeEvent event =
 
 eventDecoder : Decoder (Object Event)
 eventDecoder =
-    Decode.succeed (\objectId createdAt updatedAt title description ->
-      { objectId = objectId
-      , createdAt = createdAt
-      , updatedAt = updatedAt
-      , title = title
-      , description = description
-      }
-      )
+    Decode.succeed
+        (\objectId createdAt updatedAt title description ->
+            { objectId = objectId
+            , createdAt = createdAt
+            , updatedAt = updatedAt
+            , title = title
+            , description = description
+            }
+        )
         |> Decode.required "objectId" Parse.objectId
         |> Decode.required "createdAt" Parse.date
         |> Decode.required "updatedAt" Parse.date
         |> Decode.required "title" Decode.string
         |> Decode.required "description" Decode.string
-
-
-
----- SUBSCRIPTIONS
-
-
-subscriptions : Model -> Sub Msg
-subscriptions _ =
-    Sub.none
-
-
-
----- VIEW
 
 
 view : Model -> Html Msg
@@ -313,47 +300,39 @@ view model =
         , Html.form
             [ Events.onSubmit FormSubmitted
             ]
-            [ Html.label []
-                [ Html.text "Title" ]
+            [ Html.label [] [ Html.text "Title" ]
             , Html.input
                 [ Attributes.type_ "text"
-                , Attributes.defaultValue model.title
+                , Attributes.value model.title
                 , Events.onInput TitleUpdated
                 ]
                 []
-            , Html.label []
-                [ Html.text "Description" ]
+            , Html.label [] [ Html.text "Description" ]
             , Html.input
                 [ Attributes.type_ "text"
-                , Attributes.defaultValue model.description
+                , Attributes.value model.description
                 , Events.onInput DescriptionUpdated
                 ]
                 []
-            , Html.button
-                []
-                [ Html.text "Add" ]
+            , Html.button [] [ Html.text "Add" ]
             ]
         , Html.form
             [ Events.onSubmit FilterFormSubmitted ]
-            [ Html.label []
-                [ Html.text "Title" ]
+            [ Html.label [] [ Html.text "Title" ]
             , Html.input
                 [ Attributes.type_ "text"
-                , Attributes.defaultValue model.titleQuery
+                , Attributes.value model.titleQuery
                 , Events.onInput TitleQueryUpdated
                 ]
                 []
-            , Html.label []
-                [ Html.text "Description" ]
+            , Html.label [] [ Html.text "Description" ]
             , Html.input
                 [ Attributes.type_ "text"
-                , Attributes.defaultValue model.descriptionQuery
+                , Attributes.value model.descriptionQuery
                 , Events.onInput DescriptionQueryUpdated
                 ]
                 []
-            , Html.button
-                []
-                [ Html.text "Filter" ]
+            , Html.button [] [ Html.text "Filter" ]
             ]
         ]
 
@@ -364,11 +343,8 @@ viewEvent event =
         [ Html.strong [] [ Html.text event.title ]
         , Html.text (": " ++ event.description)
         , Html.a
-            [ Events.onWithOptions "click"
-                { preventDefault = True
-                , stopPropagation = False
-                }
-                (Decode.succeed (DeleteEventClicked event.objectId))
+            [ Events.preventDefaultOn "click"
+                (Decode.succeed ( DeleteEventClicked event.objectId, True ))
             , Attributes.href "#"
             ]
             [ Html.text "Delete" ]

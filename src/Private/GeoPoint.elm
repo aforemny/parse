@@ -1,17 +1,17 @@
-module Private.GeoPoint
-    exposing
-        ( GeoPoint
-        , geoPoint
-        , latitude
-        , longitude
-        , decode
-        , encode
-        )
+module Private.GeoPoint exposing
+    ( GeoPoint
+    , decode
+    , encode
+    , geoPoint
+    , latitude
+    , longitude
+    )
 
 import Json.Decode as Decode exposing (Decoder, Value)
 import Json.Decode.Pipeline as Decode
 import Json.Encode as Encode
 import Parse.Decode as Decode
+import Private.Decode as Decode
 
 
 type GeoPoint
@@ -27,25 +27,21 @@ geoPoint =
 
 
 latitude : GeoPoint -> Float
-latitude geoPoint =
-    case geoPoint of
-        GeoPoint { latitude } ->
-            latitude
+latitude (GeoPoint geoPoint_) =
+    geoPoint_.latitude
 
 
 longitude : GeoPoint -> Float
-longitude geoPoint =
-    case geoPoint of
-        GeoPoint { longitude } ->
-            longitude
+longitude (GeoPoint geoPoint_) =
+    geoPoint_.longitude
 
 
 decode : Decoder GeoPoint
 decode =
     Decode.parseTypeDecoder "GeoPoint"
-        (Decode.decode
-            (\latitude longitude ->
-                geoPoint { latitude = latitude, longitude = longitude }
+        (Decode.succeed
+            (\latitude_ longitude_ ->
+                geoPoint { latitude = latitude_, longitude = longitude_ }
             )
             |> Decode.required "latitude" Decode.float
             |> Decode.required "longitude" Decode.float
@@ -53,11 +49,9 @@ decode =
 
 
 encode : GeoPoint -> Value
-encode geoPoint =
-    case geoPoint of
-        GeoPoint { latitude, longitude } ->
-            Encode.object
-                [ ( "__type", Encode.string "GeoPoint" )
-                , ( "latitude", Encode.float latitude )
-                , ( "longitude", Encode.float longitude )
-                ]
+encode geoPoint_ =
+    Encode.object
+        [ ( "__type", Encode.string "GeoPoint" )
+        , ( "latitude", Encode.float (latitude geoPoint_) )
+        , ( "longitude", Encode.float (longitude geoPoint_) )
+        ]

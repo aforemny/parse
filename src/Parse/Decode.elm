@@ -1,11 +1,9 @@
-module Parse.Decode
-    exposing
-        ( date
-        , objectId
-        , pointer
-        , sessionToken
-        , parseTypeDecoder -- TODO(aforemny) Do not expose
-        )
+module Parse.Decode exposing
+    ( sessionToken
+    , objectId
+    , date
+    , pointer
+    )
 
 {-|
 
@@ -13,15 +11,16 @@ module Parse.Decode
 @docs objectId
 @docs date
 @docs pointer
-@docs parseTypeDecoder
 
 -}
 
-import Date exposing (Date)
+import Iso8601
+import Json.Decode as Decode exposing (Decoder)
+import Private.Decode as Decode
 import Private.ObjectId exposing (..)
 import Private.Pointer exposing (..)
 import Private.SessionToken exposing (..)
-import Json.Decode as Decode exposing (Decoder)
+import Time exposing (Posix)
 
 
 {-| -}
@@ -37,32 +36,19 @@ objectId =
 
 
 {-| -}
-date : Decoder Date
+date : Decoder Posix
 date =
     Decode.oneOf
-        [ Decode.string
-        , parseTypeDecoder "Date" <|
-            Decode.field "iso" Decode.string
+        [ Iso8601.decoder
+        , Decode.parseTypeDecoder "Date" <|
+            Decode.field "iso" Iso8601.decoder
         ]
-        |> Decode.andThen
-            (\rawDate ->
-                case Date.fromString rawDate of
-                    Ok date ->
-                        Decode.succeed date
-
-                    Err err ->
-                        [ "could not parse date: "
-                        , err
-                        ]
-                            |> String.concat
-                            |> Decode.fail
-            )
 
 
 {-| -}
 pointer : String -> Decoder (Pointer a)
 pointer className =
-    parseTypeDecoder "Pointer"
+    Decode.parseTypeDecoder "Pointer"
         (Decode.field "className" Decode.string
             |> Decode.andThen
                 (\actualClassName ->
@@ -75,33 +61,9 @@ pointer className =
                         ]
                             |> String.concat
                             |> Decode.fail
+
                     else
                         Decode.map (Pointer className)
                             (Decode.field "objectId" objectId)
                 )
         )
-
-
-
----- HELPER
-
-
-{-|
--}
-parseTypeDecoder : String -> Decoder a -> Decoder a
-parseTypeDecoder expectedType decoder =
-    Decode.field "__type" Decode.string
-        |> Decode.andThen
-            (\actualType ->
-                if actualType /= expectedType then
-                    [ "we expected a field of the Parse type '"
-                    , expectedType
-                    , "' but the Parse type is '"
-                    , actualType
-                    , "'"
-                    ]
-                        |> String.concat
-                        |> Decode.fail
-                else
-                    decoder
-            )

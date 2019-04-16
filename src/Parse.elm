@@ -1,91 +1,68 @@
-module Parse
-    exposing
-        ( Cause
-        , Config
-        , Constraint
-        , Error
-        , Object
-        , ObjectId
-        , Pointer
-        , pointer
-        , Query
-        , SessionToken
-        , and
-        , code
-        , create
-        , delete
-        , deleteUser
-        , emailVerificationRequest
-        , emptyQuery
-        , encodeQuery
-        , equalTo
-        , exists
-        , get
-        , getCurrentUser
-        , getUser
-        , greaterThan
-        , greaterThanOrEqualTo
-        , lessThan
-        , lessThanOrEqualTo
-        , logIn
-        , notEqualTo
-        , or
-        , passwordResetRequest
-        , query
-        , regex
-        , signUp
-        , simpleConfig
-        , update
-        , updateUser
-        , Request
-        , toTask
-        , send
-        , Role
-        , createRole
-        , getRole
-        , addUsers
-        , deleteUsers
-        , addRoles
-        , deleteRoles
-        , deleteRole
-        , ACL
-        , RoleName
-        , acl
-        , anybody
-        , users
-        , roles
-        , Permissions
-        , simple
-        , extended
-        , function
-        , job
-        , Event
-        , post
-        , postAt
-        , getConfig
-        , updateConfig
-        , GeoPoint
-        , geoPoint
-        , latitude
-        , longitude
-        , Session
-        , createSession
-        , getSession
-        , updateSession
-        , getSessions
-        , deleteSession
-        , CreatedWith
-        , Action
-        , AuthProvider
-        , ContentType
-        , File
-        , name
-        , url
-        , encodeFile
-        , fileDecoder
-        , uploadFile
-        , deleteFile
-        )
+module Parse exposing
+    ( Config, simpleConfig
+    , SessionToken
+    , Request
+    , send
+    , toTask
+    , create, get, update, delete
+    , Object
+    , ObjectId
+    , Pointer
+    , pointer
+    , query, Query, emptyQuery, encodeQuery
+    , Constraint
+    , and, or, exists
+    , equalTo, notEqualTo, regex
+    , lessThan, lessThanOrEqualTo, greaterThan, greaterThanOrEqualTo
+    , signUp
+    , logIn
+    , emailVerificationRequest, passwordResetRequest
+    , getUser, getCurrentUser, updateUser, deleteUser
+    , Session
+    , createSession
+    , getSession
+    , updateSession
+    , getSessions
+    , deleteSession
+    , CreatedWith
+    , Action
+    , AuthProvider
+    , Error, Cause, code
+    , ACL
+    , RoleName
+    , acl
+    , anybody, users, roles
+    , Permissions
+    , simple
+    , extended
+    , Role
+    , createRole
+    , getRole
+    , deleteRole
+    , addUsers
+    , deleteUsers
+    , addRoles
+    , deleteRoles
+    , File
+    , name
+    , url
+    , encodeFile
+    , fileDecoder
+    , ContentType
+    , uploadFile
+    , deleteFile
+    , GeoPoint
+    , geoPoint
+    , latitude
+    , longitude
+    , getConfig
+    , updateConfig
+    , Event
+    , post
+    , postAt
+    , function
+    , job
+    )
 
 {-|
 
@@ -231,11 +208,14 @@ module Parse
 
 @docs function
 @docs job
+
 -}
 
-import Date exposing (Date)
 import Dict
-import Http exposing (Request)
+import Http
+import Json.Decode as Decode exposing (Decoder, Value)
+import Json.Encode as Encode
+import Parse.Decode as Decode
 import Private.ACL
 import Private.Analytics
 import Private.CloudCode
@@ -249,14 +229,12 @@ import Private.Pointer
 import Private.Query
 import Private.Request
 import Private.Role
-import Private.Role
 import Private.Session
 import Private.SessionToken
 import Private.User
-import Json.Decode as Decode exposing (Decoder, Value)
-import Json.Encode as Encode
-import Parse.Decode as Decode
 import Task exposing (Task)
+import Time exposing (Posix)
+
 
 
 ---- CONFIG
@@ -303,7 +281,7 @@ create :
     String
     -> (a -> Value)
     -> a
-    -> Request { objectId : ObjectId a, createdAt : Date }
+    -> Request { objectId : ObjectId a, createdAt : Posix }
 create =
     Private.Object.create
 
@@ -315,15 +293,13 @@ get =
     Private.Object.get
 
 
-{-|
-The type of `update` is more general to facilitate delta updates. Usually when
+{-| The type of `update` is more general to facilitate delta updates. Usually when
 doing full updates its type signature is
 
-```elm
-update : String -> (a -> Value) -> ObjectId a -> a -> Request { updatedAt : Date }
-```
+    update : String -> (a -> Value) -> ObjectId a -> a -> Request { updatedAt : Posix }
+
 -}
-update : String -> (b -> Value) -> ObjectId a -> b -> Request { updatedAt : Date }
+update : String -> (b -> Value) -> ObjectId a -> b -> Request { updatedAt : Posix }
 update =
     Private.Object.update
 
@@ -365,6 +341,7 @@ type alias Query =
 {-| TODO
 
 @todo(aforemny) type Query a, query : Query a -> Request (List a)
+
 -}
 query : Decoder (Object a) -> Query -> Request (List (Object a))
 query =
@@ -415,6 +392,7 @@ notEqualTo =
 {-| TODO
 
 @todo(aforemny) lessThanOrEqualTo : String -> Value -> Constraint
+
 -}
 lessThanOrEqualTo : String -> Float -> Constraint
 lessThanOrEqualTo =
@@ -424,6 +402,7 @@ lessThanOrEqualTo =
 {-| TODO
 
 @todo(aforemny) lessThan : String -> Value -> Constraint
+
 -}
 lessThan : String -> Float -> Constraint
 lessThan =
@@ -433,6 +412,7 @@ lessThan =
 {-| TODO
 
 @todo(aforemny) greaterThanOrEqualTo : String -> Value -> Constraint
+
 -}
 greaterThanOrEqualTo : String -> Float -> Constraint
 greaterThanOrEqualTo =
@@ -442,6 +422,7 @@ greaterThanOrEqualTo =
 {-| TODO
 
 @todo(aforemny) greaterThan : String -> Value -> Constraint
+
 -}
 greaterThan : String -> Float -> Constraint
 greaterThan =
@@ -475,21 +456,22 @@ encodeQuery =
 
 {-| TODO
 -}
-updateUser : (user -> Value) -> ObjectId user -> user -> Request { updatedAt : Date }
+updateUser : (user -> Value) -> ObjectId user -> user -> Request { updatedAt : Posix }
 updateUser =
     Private.User.updateUser
 
 
 {-| TODO
 
-@todo(aforemny) signUp : (user -> Value) -> { user | username : String, password : String } -> Request { objectId : ObjectId user, createdAt : Date, sessionToken : SessionToken }
+@todo(aforemny) signUp : (user -> Value) -> { user | username : String, password : String } -> Request { objectId : ObjectId user, createdAt : Posix, sessionToken : SessionToken }
+
 -}
 signUp :
     (user -> List ( String, Value ))
     -> String
     -> String
     -> user
-    -> Request { objectId : ObjectId user, createdAt : Date, sessionToken : SessionToken }
+    -> Request { objectId : ObjectId user, createdAt : Posix, sessionToken : SessionToken }
 signUp =
     Private.User.signUp
 
@@ -540,8 +522,8 @@ getCurrentUser =
     Private.User.getCurrentUser
 
 
--- SESSIONS
 
+-- SESSIONS
 
 
 {-| TODO
@@ -554,13 +536,14 @@ type alias Session user =
 -}
 createSession :
     Session user
-    -> Request
-        { createdAt : Date
-        , createdWith : CreatedWith
-        , objectId : ObjectId (Session user)
-        , restricted : Bool
-        , sessionToken : SessionToken
-        }
+    ->
+        Request
+            { createdAt : Posix
+            , createdWith : CreatedWith
+            , objectId : ObjectId (Session user)
+            , restricted : Bool
+            , sessionToken : SessionToken
+            }
 createSession =
     Private.Session.createSession
 
@@ -574,7 +557,7 @@ getSession =
 
 {-| TODO
 -}
-updateSession : (b -> Value) -> ObjectId a -> b -> Request { updatedAt : Date }
+updateSession : (b -> Value) -> ObjectId a -> b -> Request { updatedAt : Posix }
 updateSession =
     Private.Session.updateSession
 
@@ -706,7 +689,7 @@ createRole :
     Role user
     -> List (Pointer user)
     -> List (Pointer (Role user))
-    -> Request { objectId : ObjectId (Role user), createdAt : Date }
+    -> Request { objectId : ObjectId (Role user), createdAt : Posix }
 createRole =
     Private.Role.createRole
 
@@ -720,14 +703,14 @@ getRole =
 
 {-| TODO
 -}
-addUsers : ObjectId (Role user) -> List (Pointer user) -> Request { updatedAt : Date }
+addUsers : ObjectId (Role user) -> List (Pointer user) -> Request { updatedAt : Posix }
 addUsers =
     Private.Role.addUsers
 
 
 {-| TODO
 -}
-deleteUsers : ObjectId (Role user) -> List (Pointer user) -> Request { updatedAt : Date }
+deleteUsers : ObjectId (Role user) -> List (Pointer user) -> Request { updatedAt : Posix }
 deleteUsers =
     Private.Role.addUsers
 
@@ -737,7 +720,7 @@ deleteUsers =
 addRoles :
     ObjectId (Role user)
     -> List (Pointer (Role user))
-    -> Request { updatedAt : Date }
+    -> Request { updatedAt : Posix }
 addRoles =
     Private.Role.addRoles
 
@@ -747,7 +730,7 @@ addRoles =
 deleteRoles :
     ObjectId (Role user)
     -> List (Pointer (Role user))
-    -> Request { updatedAt : Date }
+    -> Request { updatedAt : Posix }
 deleteRoles =
     Private.Role.addRoles
 
@@ -806,13 +789,14 @@ send =
     Private.Request.send
 
 
+
 -- FILES
+
 
 {-| TODO
 -}
 type alias File =
     Private.File.File
-
 
 
 {-| TODO
@@ -931,7 +915,7 @@ post =
 
 {-| TODO
 -}
-postAt : (Event a -> List ( String, Value )) -> Date -> Event a -> Request {}
+postAt : (Event a -> List ( String, Value )) -> Posix -> Event a -> Request {}
 postAt =
     Private.Analytics.postAt
 

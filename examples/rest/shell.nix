@@ -1,7 +1,7 @@
 { pkgs ? import <nixpkgs> {} }:
-
-pkgs.stdenv.mkDerivation {
+with pkgs;
+with stdenv;
+mkDerivation {
   name = "parse-example";
-
-  buildInputs = [ pkgs.mongodb pkgs.nodejs-8_x ];
+  buildInputs = [ elmPackages.elm pkgs.mongodb pkgs.nodejs ];
 }

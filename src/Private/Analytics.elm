@@ -1,11 +1,11 @@
 module Private.Analytics exposing (Event, post, postAt)
 
-import Date exposing (Date)
-import Private.Request exposing (Request, request)
 import Json.Decode as Decode exposing (Decoder, Value)
 import Json.Encode as Encode
 import Parse.Decode as Decode
 import Parse.Encode as Encode
+import Private.Request exposing (Request, request)
+import Time exposing (Posix)
 
 
 type alias Event a =
@@ -14,8 +14,7 @@ type alias Event a =
     }
 
 
-{-|
--}
+{-| -}
 post : (Event a -> List ( String, Value )) -> Event a -> Request {}
 post encode event =
     request
@@ -26,10 +25,9 @@ post encode event =
         }
 
 
-{-|
-@todo(aforemny) Encoders *should* be a -> List (String, Value)
+{-| @todo(aforemny) Encoders _should_ be a -> List (String, Value)
 -}
-postAt : (Event a -> List ( String, Value )) -> Date -> Event a -> Request {}
+postAt : (Event a -> List ( String, Value )) -> Posix -> Event a -> Request {}
 postAt encode date event =
     request
         { method = "POST"

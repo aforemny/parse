@@ -4,8 +4,6 @@
 
 ## Build documentation
 
-Install the [Nix package manager](https://nixos.org/nix), then run:
-
 ```sh
 $ make
 ```

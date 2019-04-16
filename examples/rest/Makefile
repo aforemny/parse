@@ -1,9 +1,9 @@
 start:
-	nix-shell --run "npm start"
+	npm start
 
 dashboard:
-	nix-shell --run "npm run dashboard"
+	npm run dashboard
 
 frontend:
 	mkdir -p _site
-	elm-make --yes --warn --output=_site/index.html src/Main.elm
+	elm make --optimize src/Main.elm --output=_site/index.html

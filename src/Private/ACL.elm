@@ -1,23 +1,21 @@
-module Private.ACL
-    exposing
-        ( ACL
-        , RoleName
-        , acl
-        , anybody
-        , roles
-        , users
-        , Permissions
-        , simple
-        , extended
-        , encode
-        , decode
-        )
+module Private.ACL exposing
+    ( ACL
+    , Permissions
+    , RoleName
+    , acl
+    , anybody
+    , decode
+    , encode
+    , extended
+    , roles
+    , simple
+    , users
+    )
 
-import Private.ObjectId as ObjectId exposing (ObjectId)
-import Private.ObjectId exposing (ObjectId)
-import Private.Pointer as Pointer exposing (Pointer, pointer)
 import Json.Decode as Decode exposing (Decoder, Value)
 import Json.Encode as Encode
+import Private.ObjectId as ObjectId exposing (ObjectId)
+import Private.Pointer as Pointer exposing (Pointer, pointer)
 
 
 type ACL user
@@ -38,49 +36,39 @@ acl :
     , users : List ( Pointer user, Permissions )
     }
     -> ACL user
-acl { anybody, roles, users } =
-    ACL
-        { anybody = anybody
-        , roles = roles
-        , users = users
-        }
+acl acl_ =
+    ACL acl_
 
 
 anybody : ACL user -> Permissions
-anybody acl =
-    case acl of
-        ACL { anybody } ->
-            anybody
+anybody (ACL acl_) =
+    acl_.anybody
 
 
 roles : ACL user -> List ( RoleName, Permissions )
-roles acl =
-    case acl of
-        ACL { roles } ->
-            roles
+roles (ACL acl_) =
+    acl_.roles
 
 
 users : ACL user -> List ( Pointer user, Permissions )
-users acl =
-    case acl of
-        ACL { users } ->
-            users
+users (ACL acl_) =
+    acl_.users
 
 
 encode : ACL user -> Value
-encode acl =
+encode acl_ =
     Encode.object
         (List.concat
-            [ [ ( "*", encodePermissions (anybody acl) )
+            [ [ ( "*", encodePermissions (anybody acl_) )
               ]
-            , roles acl
+            , roles acl_
                 |> List.map
                     (\( roleName, permissions ) ->
                         ( "role:" ++ roleName
                         , encodePermissions permissions
                         )
                     )
-            , users acl
+            , users acl_
                 |> List.map
                     (\( pointer, permissions ) ->
                         ( ObjectId.toString (Pointer.objectId pointer)
@@ -96,30 +84,29 @@ decode =
     Decode.keyValuePairs permissionsDecoder
         |> Decode.map
             (List.foldl
-                (\( key, permissions ) ({ anybody, roles, users } as result) ->
+                (\( key, permissions ) result ->
                     if key == "*" then
-                        ({ result
-                            | anybody = ( "*", permissions ) :: roles
-                         }
-                        )
+                        { result
+                            | anybody = ( "*", permissions ) :: result.roles
+                        }
+
                     else if String.startsWith "role:" key then
                         let
                             roleName =
                                 String.dropLeft 5 key
                         in
-                            ({ result
-                                | roles = ( roleName, permissions ) :: roles
-                             }
-                            )
+                        { result
+                            | roles = ( roleName, permissions ) :: result.roles
+                        }
+
                     else
                         let
                             user =
                                 pointer "_User" (ObjectId.fromString key)
                         in
-                            ({ result
-                                | users = ( user, permissions ) :: users
-                             }
-                            )
+                        { result
+                            | users = ( user, permissions ) :: result.users
+                        }
                 )
                 { anybody = []
                 , roles = []
@@ -127,15 +114,15 @@ decode =
                 }
             )
         |> Decode.map
-            (\{ anybody, roles, users } ->
+            (\acl_ ->
                 ACL
                     { anybody =
-                        anybody
+                        acl_.anybody
                             |> List.head
                             |> Maybe.map Tuple.second
                             |> Maybe.withDefault (simple { read = False, write = False })
-                    , roles = roles
-                    , users = users
+                    , roles = acl_.roles
+                    , users = acl_.users
                     }
             )
 
@@ -218,7 +205,8 @@ permissionsDecoder =
         )
         (Decode.oneOf
             [ Decode.at [ "write" ] Decode.bool
-              -- TODO: not right?
+
+            -- TODO: not right?
             , Decode.succeed False
             ]
         )

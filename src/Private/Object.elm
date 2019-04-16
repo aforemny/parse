@@ -1,20 +1,20 @@
-module Private.Object exposing (Object, create, get, update, delete)
+module Private.Object exposing (Object, create, delete, get, update)
 
-import Date exposing (Date)
+import Json.Decode as Decode exposing (Decoder, Value)
 import Private.ObjectId as ObjectId exposing (ObjectId)
 import Private.Request as Request exposing (Request, request)
-import Json.Decode as Decode exposing (Decoder, Value)
+import Time exposing (Posix)
 
 
 type alias Object a =
     { a
         | objectId : ObjectId a
-        , createdAt : Date
-        , updatedAt : Date
+        , createdAt : Posix
+        , updatedAt : Posix
     }
 
 
-create : String -> (a -> Value) -> a -> Request { objectId : ObjectId a, createdAt : Date }
+create : String -> (a -> Value) -> a -> Request { objectId : ObjectId a, createdAt : Posix }
 create className encodeObject object =
     request
         { method = "POST"
@@ -34,7 +34,7 @@ get className objectDecoder objectId =
         }
 
 
-update : String -> (b -> Value) -> ObjectId a -> b -> Request { updatedAt : Date }
+update : String -> (b -> Value) -> ObjectId a -> b -> Request { updatedAt : Posix }
 update className encodeObject objectId object =
     request
         { method = "PUT"
