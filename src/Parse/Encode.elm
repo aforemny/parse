@@ -19,9 +19,9 @@ module Parse.Encode exposing
 
 import Iso8601
 import Json.Encode as Encode exposing (Value)
-import Private.ObjectId exposing (..)
-import Private.Pointer as Pointer exposing (Pointer)
-import Private.SessionToken exposing (..)
+import Parse.Private.ObjectId exposing (..)
+import Parse.Private.Pointer as Pointer exposing (Pointer)
+import Parse.Private.SessionToken exposing (..)
 import Time exposing (Posix)
 
 

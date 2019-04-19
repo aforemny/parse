@@ -1,7 +1,7 @@
-module Private.CloudCode exposing (function, job)
+module Parse.Private.CloudCode exposing (function, job)
 
-import Private.Request exposing (Request, request)
 import Json.Decode as Decode exposing (Decoder, Value)
+import Parse.Private.Request exposing (Request, request)
 
 
 function : String -> Decoder a -> Value -> Request a

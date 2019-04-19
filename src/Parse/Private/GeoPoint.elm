@@ -1,4 +1,4 @@
-module Private.GeoPoint exposing
+module Parse.Private.GeoPoint exposing
     ( GeoPoint
     , decode
     , encode
@@ -11,7 +11,7 @@ import Json.Decode as Decode exposing (Decoder, Value)
 import Json.Decode.Pipeline as Decode
 import Json.Encode as Encode
 import Parse.Decode as Decode
-import Private.Decode as Decode
+import Parse.Private.Decode as Decode
 
 
 type GeoPoint

@@ -1,6 +1,6 @@
-module Private.Config exposing (getConfig, updateConfig)
+module Parse.Private.Config exposing (getConfig, updateConfig)
 
-import Private.Request exposing (Request, request)
+import Parse.Private.Request exposing (Request, request)
 import Json.Decode as Decode exposing (Decoder, Value)
 import Json.Encode as Encode
 

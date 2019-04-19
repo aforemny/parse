@@ -1,8 +1,8 @@
-module Private.Object exposing (Object, create, delete, get, update)
+module Parse.Private.Object exposing (Object, create, delete, get, update)
 
 import Json.Decode as Decode exposing (Decoder, Value)
-import Private.ObjectId as ObjectId exposing (ObjectId)
-import Private.Request as Request exposing (Request, request)
+import Parse.Private.ObjectId as ObjectId exposing (ObjectId)
+import Parse.Private.Request as Request exposing (Request, request)
 import Time exposing (Posix)
 
 

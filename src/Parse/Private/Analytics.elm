@@ -1,10 +1,10 @@
-module Private.Analytics exposing (Event, post, postAt)
+module Parse.Private.Analytics exposing (Event, post, postAt)
 
 import Json.Decode as Decode exposing (Decoder, Value)
 import Json.Encode as Encode
 import Parse.Decode as Decode
 import Parse.Encode as Encode
-import Private.Request exposing (Request, request)
+import Parse.Private.Request exposing (Request, request)
 import Time exposing (Posix)
 
 

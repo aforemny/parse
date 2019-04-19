@@ -1,4 +1,4 @@
-module Private.ACL exposing
+module Parse.Private.ACL exposing
     ( ACL
     , Permissions
     , RoleName
@@ -14,8 +14,8 @@ module Private.ACL exposing
 
 import Json.Decode as Decode exposing (Decoder, Value)
 import Json.Encode as Encode
-import Private.ObjectId as ObjectId exposing (ObjectId)
-import Private.Pointer as Pointer exposing (Pointer, pointer)
+import Parse.Private.ObjectId as ObjectId exposing (ObjectId)
+import Parse.Private.Pointer as Pointer exposing (Pointer, pointer)
 
 
 type ACL user

@@ -16,10 +16,10 @@ module Parse.Decode exposing
 
 import Iso8601
 import Json.Decode as Decode exposing (Decoder)
-import Private.Decode as Decode
-import Private.ObjectId exposing (..)
-import Private.Pointer exposing (..)
-import Private.SessionToken exposing (..)
+import Parse.Private.Decode as Decode
+import Parse.Private.ObjectId exposing (..)
+import Parse.Private.Pointer exposing (..)
+import Parse.Private.SessionToken exposing (..)
 import Time exposing (Posix)
 
 

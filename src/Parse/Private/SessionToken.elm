@@ -1,4 +1,4 @@
-module Private.SessionToken exposing
+module Parse.Private.SessionToken exposing
     ( SessionToken(..)
     , decode
     , encode

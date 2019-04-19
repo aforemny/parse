@@ -1,11 +1,11 @@
-module Private.Pointer exposing
+module Parse.Private.Pointer exposing
     ( Pointer(..)
     , className
     , objectId
     , pointer
     )
 
-import Private.ObjectId exposing (..)
+import Parse.Private.ObjectId exposing (..)
 
 
 type Pointer a

@@ -1,4 +1,4 @@
-module Private.Helpers exposing (on)
+module Parse.Private.Helpers exposing (on)
 
 
 on : (a -> b) -> (b -> b -> c) -> a -> a -> c

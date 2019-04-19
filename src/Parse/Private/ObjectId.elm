@@ -1,4 +1,4 @@
-module Private.ObjectId exposing (ObjectId(..), fromString, toString)
+module Parse.Private.ObjectId exposing (ObjectId(..), fromString, toString)
 
 
 type ObjectId a

@@ -1,4 +1,4 @@
-module Private.Query exposing
+module Parse.Private.Query exposing
     ( Constraint(..)
     , FieldConstraint(..)
     , Query
@@ -25,9 +25,9 @@ import Dict exposing (Dict)
 import Http
 import Json.Decode as Decode exposing (Decoder, Value)
 import Json.Encode as Encode
-import Private.Error exposing (Error)
-import Private.Object exposing (Object)
-import Private.Request as Requet exposing (Request, request)
+import Parse.Private.Error exposing (Error)
+import Parse.Private.Object exposing (Object)
+import Parse.Private.Request as Requet exposing (Request, request)
 import Task exposing (Task)
 import Url
 

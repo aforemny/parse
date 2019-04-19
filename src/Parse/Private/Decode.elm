@@ -1,4 +1,4 @@
-module Private.Decode exposing (parseTypeDecoder)
+module Parse.Private.Decode exposing (parseTypeDecoder)
 
 import Json.Decode as Decode exposing (Decoder)
 

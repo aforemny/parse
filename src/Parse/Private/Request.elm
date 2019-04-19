@@ -1,4 +1,4 @@
-module Private.Request exposing
+module Parse.Private.Request exposing
     ( Config
     , Request
     , postDecoder
@@ -14,9 +14,9 @@ import Http
 import Json.Decode as Decode exposing (Decoder, Value)
 import Json.Encode as Encode
 import Parse.Decode as Decode
-import Private.Error as Error exposing (Error)
-import Private.ObjectId as ObjectId exposing (ObjectId)
-import Private.SessionToken as SessionToken exposing (SessionToken)
+import Parse.Private.Error as Error exposing (Error)
+import Parse.Private.ObjectId as ObjectId exposing (ObjectId)
+import Parse.Private.SessionToken as SessionToken exposing (SessionToken)
 import Task exposing (Task)
 import Time exposing (Posix)
 

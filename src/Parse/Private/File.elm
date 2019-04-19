@@ -1,10 +1,10 @@
-module Private.File exposing (ContentType, File(..), deleteFile, encodeFile, fileDecoder, name, uploadFile, url)
+module Parse.Private.File exposing (ContentType, File(..), deleteFile, encodeFile, fileDecoder, name, uploadFile, url)
 
 import Http
 import Json.Decode as Decode exposing (Decoder, Value)
 import Json.Decode.Pipeline as Decode
 import Json.Encode as Encode
-import Private.Request as Request exposing (Request, request, requestWithAdditionalHeaders)
+import Parse.Private.Request as Request exposing (Request, request, requestWithAdditionalHeaders)
 import Url
 
 

@@ -216,22 +216,22 @@ import Http
 import Json.Decode as Decode exposing (Decoder, Value)
 import Json.Encode as Encode
 import Parse.Decode as Decode
-import Private.ACL
-import Private.Analytics
-import Private.CloudCode
-import Private.Config
-import Private.Error
-import Private.File
-import Private.GeoPoint
-import Private.Object
-import Private.ObjectId
-import Private.Pointer
-import Private.Query
-import Private.Request
-import Private.Role
-import Private.Session
-import Private.SessionToken
-import Private.User
+import Parse.Private.ACL
+import Parse.Private.Analytics
+import Parse.Private.CloudCode
+import Parse.Private.Config
+import Parse.Private.Error
+import Parse.Private.File
+import Parse.Private.GeoPoint
+import Parse.Private.Object
+import Parse.Private.ObjectId
+import Parse.Private.Pointer
+import Parse.Private.Query
+import Parse.Private.Request
+import Parse.Private.Role
+import Parse.Private.Session
+import Parse.Private.SessionToken
+import Parse.Private.User
 import Task exposing (Task)
 import Time exposing (Posix)
 
@@ -243,20 +243,20 @@ import Time exposing (Posix)
 {-| TODO
 -}
 type alias Config =
-    Private.Request.Config
+    Parse.Private.Request.Config
 
 
 {-| TODO
 -}
 simpleConfig : String -> String -> Config
 simpleConfig =
-    Private.Request.simpleConfig
+    Parse.Private.Request.simpleConfig
 
 
 {-| TODO
 -}
 type alias SessionToken =
-    Private.SessionToken.SessionToken
+    Parse.Private.SessionToken.SessionToken
 
 
 
@@ -266,13 +266,13 @@ type alias SessionToken =
 {-| TODO
 -}
 type alias ObjectId a =
-    Private.ObjectId.ObjectId a
+    Parse.Private.ObjectId.ObjectId a
 
 
 {-| TODO
 -}
 type alias Object a =
-    Private.Object.Object a
+    Parse.Private.Object.Object a
 
 
 {-| TODO
@@ -283,14 +283,14 @@ create :
     -> a
     -> Request { objectId : ObjectId a, createdAt : Posix }
 create =
-    Private.Object.create
+    Parse.Private.Object.create
 
 
 {-| TODO
 -}
 get : String -> Decoder (Object a) -> ObjectId a -> Request (Object a)
 get =
-    Private.Object.get
+    Parse.Private.Object.get
 
 
 {-| The type of `update` is more general to facilitate delta updates. Usually when
@@ -301,14 +301,14 @@ doing full updates its type signature is
 -}
 update : String -> (b -> Value) -> ObjectId a -> b -> Request { updatedAt : Posix }
 update =
-    Private.Object.update
+    Parse.Private.Object.update
 
 
 {-| TODO
 -}
 delete : String -> ObjectId a -> Request {}
 delete =
-    Private.Object.delete
+    Parse.Private.Object.delete
 
 
 
@@ -318,14 +318,14 @@ delete =
 {-| TODO
 -}
 type alias Pointer a =
-    Private.Pointer.Pointer a
+    Parse.Private.Pointer.Pointer a
 
 
 {-| TODO
 -}
 pointer : String -> ObjectId a -> Pointer a
 pointer =
-    Private.Pointer.pointer
+    Parse.Private.Pointer.pointer
 
 
 
@@ -335,7 +335,7 @@ pointer =
 {-| TODO
 -}
 type alias Query =
-    Private.Query.Query
+    Parse.Private.Query.Query
 
 
 {-| TODO
@@ -345,48 +345,48 @@ type alias Query =
 -}
 query : Decoder (Object a) -> Query -> Request (List (Object a))
 query =
-    Private.Query.query
+    Parse.Private.Query.query
 
 
 {-| TODO
 -}
 emptyQuery : String -> Query
 emptyQuery =
-    Private.Query.emptyQuery
+    Parse.Private.Query.emptyQuery
 
 
 {-| TODO
 -}
 regex : String -> String -> Constraint
 regex =
-    Private.Query.regex
+    Parse.Private.Query.regex
 
 
 {-| TODO
 -}
 type alias Constraint =
-    Private.Query.Constraint
+    Parse.Private.Query.Constraint
 
 
 {-| TODO
 -}
 or : List Constraint -> Constraint
 or =
-    Private.Query.or
+    Parse.Private.Query.or
 
 
 {-| TODO
 -}
 and : List Constraint -> Constraint
 and =
-    Private.Query.and
+    Parse.Private.Query.and
 
 
 {-| TODO
 -}
 notEqualTo : String -> Value -> Constraint
 notEqualTo =
-    Private.Query.notEqualTo
+    Parse.Private.Query.notEqualTo
 
 
 {-| TODO
@@ -396,7 +396,7 @@ notEqualTo =
 -}
 lessThanOrEqualTo : String -> Float -> Constraint
 lessThanOrEqualTo =
-    Private.Query.lessThanOrEqualTo
+    Parse.Private.Query.lessThanOrEqualTo
 
 
 {-| TODO
@@ -406,7 +406,7 @@ lessThanOrEqualTo =
 -}
 lessThan : String -> Float -> Constraint
 lessThan =
-    Private.Query.lessThan
+    Parse.Private.Query.lessThan
 
 
 {-| TODO
@@ -416,7 +416,7 @@ lessThan =
 -}
 greaterThanOrEqualTo : String -> Float -> Constraint
 greaterThanOrEqualTo =
-    Private.Query.greaterThanOrEqualTo
+    Parse.Private.Query.greaterThanOrEqualTo
 
 
 {-| TODO
@@ -426,28 +426,28 @@ greaterThanOrEqualTo =
 -}
 greaterThan : String -> Float -> Constraint
 greaterThan =
-    Private.Query.greaterThan
+    Parse.Private.Query.greaterThan
 
 
 {-| TODO
 -}
 exists : String -> Constraint
 exists =
-    Private.Query.exists
+    Parse.Private.Query.exists
 
 
 {-| TODO
 -}
 equalTo : String -> Value -> Constraint
 equalTo =
-    Private.Query.equalTo
+    Parse.Private.Query.equalTo
 
 
 {-| TODO
 -}
 encodeQuery : Query -> Value
 encodeQuery =
-    Private.Query.encodeQuery
+    Parse.Private.Query.encodeQuery
 
 
 
@@ -458,7 +458,7 @@ encodeQuery =
 -}
 updateUser : (user -> Value) -> ObjectId user -> user -> Request { updatedAt : Posix }
 updateUser =
-    Private.User.updateUser
+    Parse.Private.User.updateUser
 
 
 {-| TODO
@@ -473,7 +473,7 @@ signUp :
     -> user
     -> Request { objectId : ObjectId user, createdAt : Posix, sessionToken : SessionToken }
 signUp =
-    Private.User.signUp
+    Parse.Private.User.signUp
 
 
 {-| TODO
@@ -484,42 +484,42 @@ logIn :
     -> String
     -> Request { user : Object a, sessionToken : SessionToken }
 logIn =
-    Private.User.logIn
+    Parse.Private.User.logIn
 
 
 {-| TODO
 -}
 passwordResetRequest : String -> Request {}
 passwordResetRequest =
-    Private.User.passwordResetRequest
+    Parse.Private.User.passwordResetRequest
 
 
 {-| TODO
 -}
 emailVerificationRequest : String -> Request {}
 emailVerificationRequest =
-    Private.User.emailVerificationRequest
+    Parse.Private.User.emailVerificationRequest
 
 
 {-| TODO
 -}
 deleteUser : ObjectId a -> Request {}
 deleteUser =
-    Private.User.deleteUser
+    Parse.Private.User.deleteUser
 
 
 {-| TODO
 -}
 getUser : Decoder (Object a) -> ObjectId a -> Request (Object a)
 getUser =
-    Private.User.getUser
+    Parse.Private.User.getUser
 
 
 {-| TODO
 -}
 getCurrentUser : Decoder (Object a) -> Request (Object a)
 getCurrentUser =
-    Private.User.getCurrentUser
+    Parse.Private.User.getCurrentUser
 
 
 
@@ -529,7 +529,7 @@ getCurrentUser =
 {-| TODO
 -}
 type alias Session user =
-    Private.Session.Session user
+    Parse.Private.Session.Session user
 
 
 {-| TODO
@@ -545,53 +545,53 @@ createSession :
             , sessionToken : SessionToken
             }
 createSession =
-    Private.Session.createSession
+    Parse.Private.Session.createSession
 
 
 {-| TODO
 -}
 getSession : ObjectId (Session user) -> Request (Object (Session user))
 getSession =
-    Private.Session.getSession
+    Parse.Private.Session.getSession
 
 
 {-| TODO
 -}
 updateSession : (b -> Value) -> ObjectId a -> b -> Request { updatedAt : Posix }
 updateSession =
-    Private.Session.updateSession
+    Parse.Private.Session.updateSession
 
 
 {-| TODO
 -}
 getSessions : Request (List (Object (Session user)))
 getSessions =
-    Private.Session.getSessions
+    Parse.Private.Session.getSessions
 
 
 {-| TODO
 -}
 deleteSession : ObjectId (Session user) -> Request {}
 deleteSession =
-    Private.Session.deleteSession
+    Parse.Private.Session.deleteSession
 
 
 {-| TODO
 -}
 type alias CreatedWith =
-    Private.Session.CreatedWith
+    Parse.Private.Session.CreatedWith
 
 
 {-| TODO
 -}
 type alias Action =
-    Private.Session.Action
+    Parse.Private.Session.Action
 
 
 {-| TODO
 -}
 type alias AuthProvider =
-    Private.Session.AuthProvider
+    Parse.Private.Session.AuthProvider
 
 
 
@@ -601,13 +601,13 @@ type alias AuthProvider =
 {-| TODO
 -}
 type alias ACL user =
-    Private.ACL.ACL user
+    Parse.Private.ACL.ACL user
 
 
 {-| TODO
 -}
 type alias RoleName =
-    Private.ACL.RoleName
+    Parse.Private.ACL.RoleName
 
 
 {-| TODO
@@ -619,41 +619,41 @@ acl :
     }
     -> ACL user
 acl =
-    Private.ACL.acl
+    Parse.Private.ACL.acl
 
 
 {-| TODO
 -}
 anybody : ACL user -> Permissions
 anybody =
-    Private.ACL.anybody
+    Parse.Private.ACL.anybody
 
 
 {-| TODO
 -}
 users : ACL user -> List ( Pointer user, Permissions )
 users =
-    Private.ACL.users
+    Parse.Private.ACL.users
 
 
 {-| TODO
 -}
 roles : ACL user -> List ( RoleName, Permissions )
 roles =
-    Private.ACL.roles
+    Parse.Private.ACL.roles
 
 
 {-| TODO
 -}
 type alias Permissions =
-    Private.ACL.Permissions
+    Parse.Private.ACL.Permissions
 
 
 {-| TODO
 -}
 simple : { read : Bool, write : Bool } -> Permissions
 simple =
-    Private.ACL.simple
+    Parse.Private.ACL.simple
 
 
 {-| TODO
@@ -668,19 +668,19 @@ extended :
     }
     -> Permissions
 extended =
-    Private.ACL.extended
+    Parse.Private.ACL.extended
 
 
 {-| TODO
 -}
 type alias Role user =
-    Private.Role.Role user
+    Parse.Private.Role.Role user
 
 
 {-| TODO
 -}
 role =
-    Private.Role.role
+    Parse.Private.Role.role
 
 
 {-| TODO
@@ -691,28 +691,28 @@ createRole :
     -> List (Pointer (Role user))
     -> Request { objectId : ObjectId (Role user), createdAt : Posix }
 createRole =
-    Private.Role.createRole
+    Parse.Private.Role.createRole
 
 
 {-| TODO
 -}
 getRole : ObjectId (Role user) -> Request (Object (Role user))
 getRole =
-    Private.Role.getRole
+    Parse.Private.Role.getRole
 
 
 {-| TODO
 -}
 addUsers : ObjectId (Role user) -> List (Pointer user) -> Request { updatedAt : Posix }
 addUsers =
-    Private.Role.addUsers
+    Parse.Private.Role.addUsers
 
 
 {-| TODO
 -}
 deleteUsers : ObjectId (Role user) -> List (Pointer user) -> Request { updatedAt : Posix }
 deleteUsers =
-    Private.Role.addUsers
+    Parse.Private.Role.addUsers
 
 
 {-| TODO
@@ -722,7 +722,7 @@ addRoles :
     -> List (Pointer (Role user))
     -> Request { updatedAt : Posix }
 addRoles =
-    Private.Role.addRoles
+    Parse.Private.Role.addRoles
 
 
 {-| TODO
@@ -732,14 +732,14 @@ deleteRoles :
     -> List (Pointer (Role user))
     -> Request { updatedAt : Posix }
 deleteRoles =
-    Private.Role.addRoles
+    Parse.Private.Role.addRoles
 
 
 {-| TODO
 -}
 deleteRole : ObjectId (Role user) -> Request {}
 deleteRole =
-    Private.Role.deleteRole
+    Parse.Private.Role.deleteRole
 
 
 
@@ -749,20 +749,20 @@ deleteRole =
 {-| TODO
 -}
 type alias Error =
-    Private.Error.Error
+    Parse.Private.Error.Error
 
 
 {-| TODO
 -}
 type alias Cause =
-    Private.Error.Cause
+    Parse.Private.Error.Cause
 
 
 {-| TODO
 -}
 code : Cause -> Int
 code =
-    Private.Error.code
+    Parse.Private.Error.code
 
 
 
@@ -772,21 +772,21 @@ code =
 {-| TODO
 -}
 type alias Request a =
-    Private.Request.Request a
+    Parse.Private.Request.Request a
 
 
 {-| TODO
 -}
 toTask : Config -> Request a -> Task Error a
 toTask =
-    Private.Request.toTask
+    Parse.Private.Request.toTask
 
 
 {-| TODO
 -}
 send : Config -> (Result Error a -> m) -> Request a -> Cmd m
 send =
-    Private.Request.send
+    Parse.Private.Request.send
 
 
 
@@ -796,55 +796,55 @@ send =
 {-| TODO
 -}
 type alias File =
-    Private.File.File
+    Parse.Private.File.File
 
 
 {-| TODO
 -}
 name : File -> String
 name =
-    Private.File.name
+    Parse.Private.File.name
 
 
 {-| TODO
 -}
 url : File -> String
 url =
-    Private.File.url
+    Parse.Private.File.url
 
 
 {-| TODO
 -}
 encodeFile : File -> Value
 encodeFile =
-    Private.File.encodeFile
+    Parse.Private.File.encodeFile
 
 
 {-| TODO
 -}
 fileDecoder : Decoder File
 fileDecoder =
-    Private.File.fileDecoder
+    Parse.Private.File.fileDecoder
 
 
 {-| TODO
 -}
 type alias ContentType =
-    Private.File.ContentType
+    Parse.Private.File.ContentType
 
 
 {-| TODO
 -}
 uploadFile : String -> ContentType -> Value -> Request File
 uploadFile =
-    Private.File.uploadFile
+    Parse.Private.File.uploadFile
 
 
 {-| TODO
 -}
 deleteFile : File -> Request {}
 deleteFile =
-    Private.File.deleteFile
+    Parse.Private.File.deleteFile
 
 
 
@@ -854,28 +854,28 @@ deleteFile =
 {-| TODO
 -}
 type alias GeoPoint =
-    Private.GeoPoint.GeoPoint
+    Parse.Private.GeoPoint.GeoPoint
 
 
 {-| TODO
 -}
 geoPoint : { latitude : Float, longitude : Float } -> GeoPoint
 geoPoint =
-    Private.GeoPoint.geoPoint
+    Parse.Private.GeoPoint.geoPoint
 
 
 {-| TODO
 -}
 latitude : GeoPoint -> Float
 latitude =
-    Private.GeoPoint.latitude
+    Parse.Private.GeoPoint.latitude
 
 
 {-| TODO
 -}
 longitude : GeoPoint -> Float
 longitude =
-    Private.GeoPoint.longitude
+    Parse.Private.GeoPoint.longitude
 
 
 
@@ -886,14 +886,14 @@ longitude =
 -}
 getConfig : Decoder a -> Request a
 getConfig =
-    Private.Config.getConfig
+    Parse.Private.Config.getConfig
 
 
 {-| TODO
 -}
 updateConfig : List ( String, Value ) -> Request Bool
 updateConfig =
-    Private.Config.updateConfig
+    Parse.Private.Config.updateConfig
 
 
 
@@ -903,21 +903,21 @@ updateConfig =
 {-| TODO
 -}
 type alias Event a =
-    Private.Analytics.Event a
+    Parse.Private.Analytics.Event a
 
 
 {-| TODO
 -}
 post : (Event a -> List ( String, Value )) -> Event a -> Request {}
 post =
-    Private.Analytics.post
+    Parse.Private.Analytics.post
 
 
 {-| TODO
 -}
 postAt : (Event a -> List ( String, Value )) -> Posix -> Event a -> Request {}
 postAt =
-    Private.Analytics.postAt
+    Parse.Private.Analytics.postAt
 
 
 
@@ -928,11 +928,11 @@ postAt =
 -}
 function : String -> Decoder a -> Value -> Request a
 function =
-    Private.CloudCode.function
+    Parse.Private.CloudCode.function
 
 
 {-| TODO
 -}
 job : String -> Value -> Request {}
 job =
-    Private.CloudCode.job
+    Parse.Private.CloudCode.job

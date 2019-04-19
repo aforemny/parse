@@ -1,14 +1,14 @@
-module Private.User exposing (deleteUser, emailVerificationRequest, getCurrentUser, getUser, logIn, passwordResetRequest, signUp, updateUser)
+module Parse.Private.User exposing (deleteUser, emailVerificationRequest, getCurrentUser, getUser, logIn, passwordResetRequest, signUp, updateUser)
 
 import Http
 import Json.Decode as Decode exposing (Decoder, Value)
 import Json.Decode.Pipeline as Decode
 import Json.Encode as Encode
 import Parse.Decode as Decode
-import Private.Object as Object exposing (Object)
-import Private.ObjectId as ObjectId exposing (ObjectId)
-import Private.Request as Request exposing (Request, request, requestWithAdditionalHeaders)
-import Private.SessionToken as SessionToken exposing (SessionToken)
+import Parse.Private.Object as Object exposing (Object)
+import Parse.Private.ObjectId as ObjectId exposing (ObjectId)
+import Parse.Private.Request as Request exposing (Request, request, requestWithAdditionalHeaders)
+import Parse.Private.SessionToken as SessionToken exposing (SessionToken)
 import Time exposing (Posix)
 import Url
 

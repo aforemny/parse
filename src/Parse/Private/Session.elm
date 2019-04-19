@@ -1,15 +1,34 @@
-module Private.Session exposing (Action(..), AuthProvider(..), CreatedWith(..), Session, actionDecoder, authProviderDecoder, createDecoder, createSession, createdWithDecoder, deleteSession, encodeAction, encodeAuthProvider, encodeCreatedWith, encodeSession, getSession, getSessions, sessionDecoder, updateSession)
+module Parse.Private.Session exposing
+    ( Action(..)
+    , AuthProvider(..)
+    , CreatedWith(..)
+    , Session
+    , actionDecoder
+    , authProviderDecoder
+    , createDecoder
+    , createSession
+    , createdWithDecoder
+    , deleteSession
+    , encodeAction
+    , encodeAuthProvider
+    , encodeCreatedWith
+    , encodeSession
+    , getSession
+    , getSessions
+    , sessionDecoder
+    , updateSession
+    )
 
 import Json.Decode as Decode exposing (Decoder, Value)
 import Json.Decode.Pipeline as Decode
 import Json.Encode as Encode
 import Parse.Decode as Decode
 import Parse.Encode as Encode
-import Private.Object as Object exposing (Object)
-import Private.ObjectId as ObjectId exposing (ObjectId)
-import Private.Pointer as Pointer exposing (Pointer)
-import Private.Request as Request exposing (Request, request)
-import Private.SessionToken as SessionToken exposing (SessionToken)
+import Parse.Private.Object as Object exposing (Object)
+import Parse.Private.ObjectId as ObjectId exposing (ObjectId)
+import Parse.Private.Pointer as Pointer exposing (Pointer)
+import Parse.Private.Request as Request exposing (Request, request)
+import Parse.Private.SessionToken as SessionToken exposing (SessionToken)
 import Time exposing (Posix)
 
 

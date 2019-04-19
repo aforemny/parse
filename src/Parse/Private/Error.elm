@@ -1,4 +1,4 @@
-module Private.Error exposing (Cause, Error(..), code, errorDecoder)
+module Parse.Private.Error exposing (Cause, Error(..), code, errorDecoder)
 
 import Http
 import Json.Decode as Decode exposing (Decoder, Value)

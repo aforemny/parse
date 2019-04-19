@@ -1,4 +1,4 @@
-module Private.Role exposing
+module Parse.Private.Role exposing
     ( Role
     , addRoles
     , addUsers
@@ -15,11 +15,11 @@ import Json.Decode.Pipeline as Decode
 import Json.Encode as Encode
 import Parse.Decode as Decode
 import Parse.Encode as Encode
-import Private.ACL as ACL exposing (ACL)
-import Private.Object exposing (Object)
-import Private.ObjectId as ObjectId exposing (ObjectId)
-import Private.Pointer as Pointer exposing (Pointer)
-import Private.Request as Request exposing (Request, request)
+import Parse.Private.ACL as ACL exposing (ACL)
+import Parse.Private.Object exposing (Object)
+import Parse.Private.ObjectId as ObjectId exposing (ObjectId)
+import Parse.Private.Pointer as Pointer exposing (Pointer)
+import Parse.Private.Request as Request exposing (Request, request)
 import Time exposing (Posix)
 
 
