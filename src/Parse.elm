@@ -62,6 +62,7 @@ module Parse exposing
     , postAt
     , function
     , job
+    , fail
     )
 
 {-|
@@ -780,6 +781,11 @@ type alias Request a =
 toTask : Config -> Request a -> Task Error a
 toTask =
     Parse.Private.Request.toTask
+
+
+fail : String -> Task Error a
+fail =
+    Parse.Private.Request.fail
 
 
 {-| TODO

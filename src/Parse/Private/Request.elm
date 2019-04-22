@@ -1,6 +1,7 @@
 module Parse.Private.Request exposing
     ( Config
     , Request
+    , fail
     , postDecoder
     , putDecoder
     , request
@@ -169,6 +170,11 @@ toTask : Config -> Request a -> Task Error a
 toTask config (Request { runRequest }) =
     Http.task (runRequest config)
         |> Task.mapError Error.HttpError
+
+
+fail : String -> Task Error a
+fail string =
+    Task.fail (Error.UserError string)
 
 
 send : Config -> (Result Error a -> m) -> Request a -> Cmd m

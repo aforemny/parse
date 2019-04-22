@@ -17,6 +17,7 @@ type Error
         , error : String
         }
     | HttpError Http.Error
+    | UserError String
 
 
 {-| -}
