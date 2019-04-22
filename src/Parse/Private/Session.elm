@@ -38,7 +38,7 @@ type alias Session user =
     , createdWith : CreatedWith
     , restricted : Bool
     , expiresAt : Posix
-    , installationId : String
+    , installationId : Maybe String
     }
 
 
@@ -50,7 +50,9 @@ encodeSession session =
         , ( "createdWith", encodeCreatedWith session.createdWith )
         , ( "restricted", Encode.bool session.restricted )
         , ( "expiresAt", Encode.date session.expiresAt )
-        , ( "installationId", Encode.string session.installationId )
+        , ( "installationId"
+          , Maybe.withDefault Encode.null (Maybe.map Encode.string session.installationId)
+          )
         ]
 
 
@@ -77,7 +79,7 @@ sessionDecoder =
         |> Decode.required "createdWith" createdWithDecoder
         |> Decode.required "restricted" Decode.bool
         |> Decode.required "expiresAt" Decode.date
-        |> Decode.required "installationid" Decode.string
+        |> Decode.optional "installationId" (Decode.map Just Decode.string) Nothing
 
 
 createSession :
