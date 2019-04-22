@@ -4,6 +4,7 @@ module Parse.Private.SessionToken exposing
     , encode
     , fromString
     , toString
+    , toValue
     )
 
 import Json.Decode as Decode exposing (Decoder, Value)
@@ -17,6 +18,11 @@ type SessionToken
 toString : SessionToken -> String
 toString (SessionToken sessionToken) =
     sessionToken
+
+
+toValue : SessionToken -> Value
+toValue (SessionToken sessionToken) =
+    Encode.string sessionToken
 
 
 fromString : String -> SessionToken
