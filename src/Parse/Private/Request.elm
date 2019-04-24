@@ -1,6 +1,7 @@
 module Parse.Private.Request exposing
     ( Config
     , Request
+    , binaryRequestWithAdditionalHeaders
     , fail
     , postDecoder
     , putDecoder
@@ -11,6 +12,7 @@ module Parse.Private.Request exposing
     , toTask
     )
 
+import Bytes exposing (Bytes)
 import Http
 import Json.Decode as Decode exposing (Decoder, Value)
 import Json.Encode as Encode
@@ -118,6 +120,52 @@ requestWithAdditionalHeaders { method, additionalHeaders, endpoint, body, decode
                 , body =
                     Maybe.map Http.jsonBody body
                         |> Maybe.withDefault Http.emptyBody
+                , resolver =
+                    Http.stringResolver
+                        (\response ->
+                            case response of
+                                Http.BadUrl_ url ->
+                                    Err (Http.BadUrl url)
+
+                                Http.Timeout_ ->
+                                    Err Http.Timeout
+
+                                Http.NetworkError_ ->
+                                    Err Http.NetworkError
+
+                                Http.BadStatus_ metadata body_ ->
+                                    Err (Http.BadStatus metadata.statusCode)
+
+                                Http.GoodStatus_ metadata body_ ->
+                                    case Decode.decodeString decoder body_ of
+                                        Ok value ->
+                                            Ok value
+
+                                        Err err ->
+                                            Err (Http.BadBody (Decode.errorToString err))
+                        )
+                , timeout = Nothing
+                }
+        }
+
+
+binaryRequestWithAdditionalHeaders :
+    { method : String
+    , additionalHeaders : List Http.Header
+    , endpoint : String
+    , body : Bytes
+    , contentType : String
+    , decoder : Decoder a
+    }
+    -> Request a
+binaryRequestWithAdditionalHeaders { contentType, method, additionalHeaders, endpoint, body, decoder } =
+    Request <|
+        { runRequest =
+            \config ->
+                { method = method
+                , headers = headers config ++ additionalHeaders
+                , url = config.serverUrl ++ endpoint
+                , body = Http.bytesBody contentType body
                 , resolver =
                     Http.stringResolver
                         (\response ->

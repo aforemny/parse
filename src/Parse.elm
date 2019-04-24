@@ -212,6 +212,7 @@ module Parse exposing
 
 -}
 
+import Bytes exposing (Bytes)
 import Dict
 import Http
 import Json.Decode as Decode exposing (Decoder, Value)
@@ -841,7 +842,7 @@ type alias ContentType =
 
 {-| TODO
 -}
-uploadFile : String -> ContentType -> Value -> Request File
+uploadFile : String -> ContentType -> Bytes -> Request File
 uploadFile =
     Parse.Private.File.uploadFile
 

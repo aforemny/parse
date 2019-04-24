@@ -1,10 +1,11 @@
 module Parse.Private.File exposing (ContentType, File(..), deleteFile, encodeFile, fileDecoder, name, uploadFile, url)
 
+import Bytes exposing (Bytes)
 import Http
 import Json.Decode as Decode exposing (Decoder, Value)
 import Json.Decode.Pipeline as Decode
 import Json.Encode as Encode
-import Parse.Private.Request as Request exposing (Request, request, requestWithAdditionalHeaders)
+import Parse.Private.Request as Request exposing (Request, binaryRequestWithAdditionalHeaders, request)
 import Url
 
 
@@ -44,13 +45,14 @@ type alias ContentType =
     String
 
 
-uploadFile : String -> ContentType -> Value -> Request File
+uploadFile : String -> ContentType -> Bytes -> Request File
 uploadFile fileName contentType file =
-    requestWithAdditionalHeaders
+    binaryRequestWithAdditionalHeaders
         { method = "POST"
         , additionalHeaders = [ Http.header "Content-Type" contentType ]
         , endpoint = "/files/" ++ Url.percentEncode fileName
-        , body = Just file
+        , contentType = contentType
+        , body = file
         , decoder = fileDecoder
         }
 
